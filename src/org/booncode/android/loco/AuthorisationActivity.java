@@ -56,7 +56,7 @@ public class AuthorisationActivity extends ListActivity
   }
   
   @Override
-	protected void onListItemClick(ListView l, View v, int position, long id)
+  protected void onListItemClick(ListView l, View v, int position, long id)
   {
     final int item_position = position;
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -82,5 +82,5 @@ public class AuthorisationActivity extends ListActivity
       });
     AlertDialog dialog = builder.create();
     dialog.show();
-	}
+  }
 }

@@ -149,10 +149,10 @@ public class Stalker extends Service
   }
   
   @Override
-	public IBinder onBind(Intent intent)
+  public IBinder onBind(Intent intent)
   {
-		return m_binder;
-	}
+    return m_binder;
+  }
   
   @Override
   public void onStart(Intent intent, int startId)
