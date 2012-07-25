@@ -5,24 +5,32 @@
   android:layout_height="fill_parent">
   
   <Button  
-    android:id="@+id/btn_on"
+    android:id="@+id/btn_add"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    android:text="service on"
-    android:onClick="pressedOk"/>
+    android:text="Add authorised number"
+    android:onClick="addNumber"/>
 
   <Button  
-    android:id="@+id/btn_toggle"
+    android:id="@+id/btn_show"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    android:text="add number..." 
-    android:onClick="addNumber" />
-
+    android:text="Manage authorised numbers" 
+    android:onClick="manageAuth" />
+  
+  <Button
+    android:id="@+id/btn_locate"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Locate phone"
+    android:onClick="locateCMD" />
+  
   <Button
     android:id="@+id/btn_quit"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    android:text="quit" />
+    android:text="Quit"
+    android:onClick="quitApp" />
   
   <TextView android:id="@+id/text"
     android:layout_width="wrap_content"

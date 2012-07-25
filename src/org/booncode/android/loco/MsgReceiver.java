@@ -15,20 +15,19 @@ public class MsgReceiver extends BroadcastReceiver
   private Context m_context = null;
   
   
-  
   protected boolean processMessage(SmsMessage msg)
   {
     String text = msg.getMessageBody();
     if (text != null)
     {
-      Toast toast = Toast.makeText(this.m_context, "Inspecting: " + text, Toast.LENGTH_LONG);
-      toast.show();
+      //Toast.makeText(this.m_context, "Inspecting: " + text, Toast.LENGTH_LONG).show();
       
       if (text.startsWith(LOCO_CMD_START))
       {
         String addr = msg.getOriginatingAddress();
         if (addr != null)
         {
+          //Toast.makeText(this.m_context, addr, Toast.LENGTH_LONG).show();
           startStalker(text.substring(LOCO_CMD_START.length()), addr);
           return true;
         }
@@ -37,7 +36,6 @@ public class MsgReceiver extends BroadcastReceiver
     
     return false;
   }
-  
   
   protected boolean scanPDU(Object pdu)
   {
@@ -57,7 +55,6 @@ public class MsgReceiver extends BroadcastReceiver
     return this.processMessage(msg);
   }
   
-  
   protected boolean inspectIntent(Intent intent)
   {
     Bundle bundle = intent.getExtras();
@@ -73,7 +70,8 @@ public class MsgReceiver extends BroadcastReceiver
       catch(Exception e)
       {
         // DEBUG: remove this!
-        Toast.makeText(this.m_context, "Couldn't retrieve PDU's", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this.m_context, "Couldn't retrieve PDU's", Toast.LENGTH_LONG).show();
+        
         // silently ignore this error...
       }
       
@@ -89,17 +87,15 @@ public class MsgReceiver extends BroadcastReceiver
     return is_cmd;
   }
   
-  
   protected void startStalker(String cmd, String telnr)
   {
     Intent intent = new Intent();
     intent.setFlags(Intent.FLAG_FROM_BACKGROUND);
-    intent.setAction("org.booncode.android.loco.Stalker");
+    intent.setAction(Stalker.STALKING_ACTION);
     intent.putExtra("cmd", cmd);
     intent.putExtra("phone-number", telnr);
     this.m_context.startService(intent);
   }
-  
   
   @Override
   public void onReceive(Context context, Intent intent) 
@@ -117,7 +113,8 @@ public class MsgReceiver extends BroadcastReceiver
     }
     else
     {
-      Toast.makeText(context, "Strange Intent...", Toast.LENGTH_LONG).show();
+      // silently ignore unexpected intent
+      //Toast.makeText(context, "Strange Intent...", Toast.LENGTH_LONG).show();
     }
   }
 }
