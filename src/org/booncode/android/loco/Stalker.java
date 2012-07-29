@@ -51,22 +51,23 @@ public class Stalker extends Service
     {
       this.m_number = number;
       this.m_manager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-      this.m_manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0.0f, this);
-      this.m_manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0.0f, this);
+      this.m_manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0.0f, this);
     }
     
     @Override
     public void onLocationChanged(Location loco)
     {
+      String latitude = Double.toString(loco.getLatitude());
+      String longitude = Double.toString(loco.getLongitude());
+      
       m_manager.removeUpdates(this);
       if (!this.m_is_sent)
       {
-        Double latitude = new Double(loco.getLatitude());
-        Double longitude = new Double(loco.getLongitude());
+        
         this.m_is_sent = true;
         String geo = String.format("%sgeo: %s, %s", MsgReceiver.LOCO_CMD_START, 
-                                   latitude.toString(), longitude.toString());
-        //Toast.makeText(Stalker.this, "Sending Location", Toast.LENGTH_LONG).show();
+                                   latitude, longitude);
+        Toast.makeText(Stalker.this, latitude + ", " + longitude, Toast.LENGTH_LONG).show();
         Stalker.this.sendSMS(this.m_number, geo);
       }
     }
