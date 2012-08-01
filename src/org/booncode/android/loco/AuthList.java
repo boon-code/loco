@@ -4,17 +4,34 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
+import org.json.*;
 
 
-public class AuthList
+public class StalkerSettings
 {
   public static final String SETTINGS_FILE = "settings";
-  public static final String AUTH_LIST = "auth_list";
-  public static final String SEP = ";";
+  public static final String STALKER_DATA = "stalker";
   
   protected SharedPreferences m_settings;
   
-  public ArrayList<String> sharedList;
+  public ArrayList<DataSet> sharedList;
+  
+  public class DataSet
+  {
+    public static final String NAME;
+    
+    public String name;
+    
+    public void fromJSON(JSONObject obj)
+    {
+      
+    }
+    
+    public JSONObject toJSON()
+    {
+      return new JSONObject();
+    }
+  }
   
   
   public AuthList(SharedPreferences settings)
@@ -53,6 +70,8 @@ public class AuthList
   
   public void reloadList()
   {
+    String json = this.m_settings.getString(STALKER_DATA, "");
+    JSONArray ar = 
     String[] items = this.m_settings.getString(AUTH_LIST, "").split(";");
     sharedList.clear();
     for (String item : items)

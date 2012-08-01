@@ -9,10 +9,9 @@ import android.view.View;
 import android.widget.ListView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 
 import java.util.ArrayList;
-
-import android.widget.Toast;
 
 public class AuthorisationActivity extends ListActivity
 {

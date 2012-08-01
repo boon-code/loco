@@ -16,14 +16,15 @@ import android.location.Location;
 import android.location.LocationListener;
 
 import java.util.regex.*;
-
-import android.widget.Toast;
+import android.util.Log;
 
 public class Stalker extends Service
 {
   public static final String SETTINGS_FILE = "settings";
   public static final String AUTH_LIST = "auth_list";
   public static final String STALKING_ACTION = "org.booncode.android.loco.Stalker";
+  
+  protected static final String TAG = "loco.Stalker";
   
   private static final Pattern RE_GEO = Pattern.compile("^geo:\\s*(\\d+.\\d*)\\s*,\\s*(\\d+.\\d*)\\s*$");
   
@@ -67,7 +68,7 @@ public class Stalker extends Service
         this.m_is_sent = true;
         String geo = String.format("%sgeo: %s, %s", MsgReceiver.LOCO_CMD_START, 
                                    latitude, longitude);
-        Toast.makeText(Stalker.this, latitude + ", " + longitude, Toast.LENGTH_LONG).show();
+        Log.d(TAG, geo);
         Stalker.this.sendSMS(this.m_number, geo);
       }
     }
@@ -123,13 +124,14 @@ public class Stalker extends Service
   
   protected void processLocating(String addr)
   {
-    //Toast.makeText(this, "Start locating...", Toast.LENGTH_LONG).show();
+    Log.d(TAG, "Start locating...");
     LocateAndSend tmp = new LocateAndSend(addr);
   }
   
   protected void sendSMS(String number, String text)
   {
     SmsManager man = SmsManager.getDefault();
+    Log.d(TAG, "Sending sms to " + number);
     man.sendTextMessage(number, null, text, null, null);
   }
   
@@ -145,7 +147,7 @@ public class Stalker extends Service
     }
     else
     {
-      Toast.makeText(this, "Unknown CMD: " + cmd, Toast.LENGTH_LONG).show();
+      Log.d(TAG, "Unknown authorised CMD: " + cmd);
     }
   }
   
@@ -158,6 +160,7 @@ public class Stalker extends Service
   @Override
   public void onStart(Intent intent, int startId)
   {
+    Log.d(TAG, "Creating Stalker...");
     Bundle bundle = intent.getExtras();
     
     if (bundle != null)
@@ -170,10 +173,22 @@ public class Stalker extends Service
       }
       else
       {
-        Toast.makeText(this, "Unauthorised CMD: " + cmd, Toast.LENGTH_LONG).show();
+        StringBuilder builder = new StringBuilder();
+        builder.append("Unauthorised CMD (addr=");
+        builder.append(addr);
+        builder.append("): ");
+        builder.append(cmd);
+        Log.w(TAG, builder.toString());
       }
     }
-    
+    Log.d(TAG, "Just before Stalker.stopSelf()");
     this.stopSelf();
+  }
+  
+  @Override
+  public void onDestroy()
+  {
+    super.onDestroy();
+    Log.d(TAG, "Stalker::onDestroy()");
   }
 }
