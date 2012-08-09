@@ -40,6 +40,7 @@ import android.util.Log;
 import java.util.List;
 
 import android.os.SystemClock;
+import java.lang.*;
 
 
 public class TestService extends Service implements LocationListener
@@ -48,12 +49,18 @@ public class TestService extends Service implements LocationListener
   
   protected static final String TAG = "TestService";
   
-  protected PendingIntent m_wake_intent;
-  protected LocationManager m_manager;
-  protected PowerManager.WakeLock m_lock;
+  protected LocationManager m_loc_man;
   protected AlarmManager m_alarm_man;
+  protected NotificationManager m_notify_man;
+  
+  protected PendingIntent m_wake_intent;
+  
+  protected PowerManager.WakeLock m_lock;
   protected boolean m_updates_enabled = false;
   protected boolean m_wakeup_on = false;
+  
+  protected boolean m_do_notify = false;
+  protected int m_id = 0;
   
   @Override
   public void onLocationChanged(Location loc)
@@ -67,6 +74,15 @@ public class TestService extends Service implements LocationListener
     {
       float acc = loc.getAccuracy();
       accuracy = "(" + acc + ")";
+    }
+    
+    String google_geo = String.format("geo:0,0?q=%s,%s (Position)", latitude, longitude);
+    
+    if (m_do_notify)
+    {
+      Log.d(TAG, "Adding notification...");
+      m_do_notify = false;
+      addNotify(google_geo);
     }
     
     String geo = String.format("geo: %s, %s, %s", latitude, longitude, accuracy);
@@ -101,11 +117,13 @@ public class TestService extends Service implements LocationListener
     intent.putExtra(TestService.COMMAND, 5);
     m_wake_intent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     
-    m_alarm_man = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+    m_alarm_man = (AlarmManager)getSystemService(ALARM_SERVICE);
     
-    PowerManager power_man = (PowerManager)getSystemService(Context.POWER_SERVICE);
+    m_notify_man = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+    
+    PowerManager power_man = (PowerManager)getSystemService(POWER_SERVICE);
     m_lock = power_man.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-    this.m_manager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+    this.m_loc_man = (LocationManager)getSystemService(LOCATION_SERVICE);
   }
   
   protected void releaseLock()
@@ -138,7 +156,7 @@ public class TestService extends Service implements LocationListener
   
   protected void testLocating()
   {
-    List<String> list = m_manager.getProviders(true);
+    List<String> list = m_loc_man.getProviders(true);
     
     for (String name : list)
     {
@@ -178,6 +196,26 @@ public class TestService extends Service implements LocationListener
     }
   }
   
+  protected void addNotify(String geodata)
+  {
+    int icon = R.drawable.prog_icon;
+    CharSequence ticker = "started service";
+    long time_stamp = System.currentTimeMillis();
+    CharSequence title = "TestService";
+    CharSequence text = "Open location in Maps...";
+    
+    Uri uri = Uri.parse(geodata);
+    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+    PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
+    
+    Notification notification = new Notification(icon, ticker, time_stamp);
+    notification.setLatestEventInfo(this, title, text, pintent);
+    notification.flags = Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
+    
+    ++m_id;
+    m_notify_man.notify(m_id, notification);
+  }
+  
   @Override
   public int onStartCommand(Intent intent, int flags, int startId)
   {
@@ -209,8 +247,8 @@ public class TestService extends Service implements LocationListener
         {
           Log.d(TAG, "Start locating service...");
           testLocating();
-          this.m_manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0.0f, this);
-          this.m_manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0.0f, this);
+          this.m_loc_man.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0.0f, this);
+          this.m_loc_man.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0.0f, this);
           m_updates_enabled = true;
         }
         else
@@ -223,7 +261,7 @@ public class TestService extends Service implements LocationListener
         if (m_updates_enabled)
         {
           Log.d(TAG, "Stop locating...");
-          m_manager.removeUpdates(this);
+          m_loc_man.removeUpdates(this);
           releaseLock();
           m_updates_enabled = false;
         }
@@ -239,6 +277,8 @@ public class TestService extends Service implements LocationListener
         break;
       
       case 4:
+        Log.d(TAG, "Enable Adding Notification...");
+        m_do_notify = true;
         break;
       
       case 5:
@@ -271,7 +311,7 @@ public class TestService extends Service implements LocationListener
     Log.d(TAG, "onDestroy()");
     if (m_updates_enabled)
     {
-      m_manager.removeUpdates(this);
+      m_loc_man.removeUpdates(this);
       Log.d(TAG, "Stop locating at onDestroy()...");
     }
   }

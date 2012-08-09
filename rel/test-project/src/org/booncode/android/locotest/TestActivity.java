@@ -35,11 +35,15 @@ import android.location.LocationListener;
 import java.util.regex.*;
 import android.util.Log;
 
+import android.database.Cursor;
+import android.provider.ContactsContract;
+import android.widget.Toast;
+
 
 public class TestActivity extends Activity
 {
   protected static final String TAG = "TestActivity";
-  
+  protected static final int REQUEST_CONTACT = 1;
   
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -94,6 +98,53 @@ public class TestActivity extends Activity
   {
     Intent intent = new Intent(this, TestService.class);
     startService(intent);
+  }
+  
+  public void pickContacts(View v)
+  {
+    Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+    startActivityForResult(intent, REQUEST_CONTACT);
+  }
+  
+  @Override
+  public void onActivityResult (int request, int result, Intent intent)
+  {
+    if (request == REQUEST_CONTACT)
+    {
+      if (result == Activity.RESULT_OK)
+      {
+        Log.d(TAG, "Picking contact number went fine...");
+        Uri uri = intent.getData();
+        Log.d(TAG, "Uri: " + uri.toString());
+        Cursor cursor =  managedQuery(uri, null, null, null, null);
+        if (cursor.moveToFirst())
+        {
+          int idx_number, idx_name;
+          try
+          {
+            idx_number = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            idx_name = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
+          }
+          catch(IllegalArgumentException ex)
+          {
+            Log.d(TAG, "Couldn't retrieve name and number...", ex);
+            return;
+          }
+          
+          String number = cursor.getString(idx_number);
+          String name = cursor.getString(idx_name);
+          Toast.makeText(this, name + ": " + number, Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+          Log.d(TAG, "No number...");
+        }
+      }
+      else
+      {
+        Log.d(TAG, "Picking contact numberfailed...");
+      }
+    }
   }
   
   @Override
