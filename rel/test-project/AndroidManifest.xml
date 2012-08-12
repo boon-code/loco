@@ -11,6 +11,10 @@
       </intent-filter>
     </activity>
     
+    <activity android:name=".TestListActivity" android:screenOrientation="portrait"
+      android:launchMode="singleTop">
+    </activity>
+    
     <service android:name=".TestService" />
   
   </application>

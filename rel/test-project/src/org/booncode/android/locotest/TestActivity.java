@@ -106,6 +106,13 @@ public class TestActivity extends Activity
     startActivityForResult(intent, REQUEST_CONTACT);
   }
   
+  public void showStalkerDatabase(View v)
+  {
+    Log.d(TAG, "Just before TestListActivity...");
+    Intent intent = new Intent(this, TestListActivity.class);
+    startActivity(intent);
+  }
+  
   @Override
   public void onActivityResult (int request, int result, Intent intent)
   {
@@ -133,7 +140,16 @@ public class TestActivity extends Activity
           
           String number = cursor.getString(idx_number);
           String name = cursor.getString(idx_name);
+          
           Toast.makeText(this, name + ": " + number, Toast.LENGTH_LONG).show();
+          
+          StalkerDatabase db = new StalkerDatabase(getApplicationContext());
+          boolean ret = db.addPerson(number, name, true);
+          
+          if (!ret)
+          {
+            Toast.makeText(this, "Couldn't add person...", Toast.LENGTH_LONG).show();
+          }
         }
         else
         {
