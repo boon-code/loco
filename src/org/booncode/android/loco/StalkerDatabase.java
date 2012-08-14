@@ -1,4 +1,4 @@
-package org.booncode.android.locotest;
+package org.booncode.android.loco;
 
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,7 +18,7 @@ public class StalkerDatabase extends SQLiteOpenHelper
   
   public static final String TABLE_PERSONS = "persons";
   
-  protected static final String TAG = "StalkerDatabase";
+  protected static final String TAG = "loco.StalkerDatabase";
   
   
   public static class Person
@@ -70,14 +70,7 @@ public class StalkerDatabase extends SQLiteOpenHelper
     ContentValues content = new ContentValues();
     content.put(Person.NAME, name);
     content.put(Person.NUMBER, number);
-    if (authorised)
-    {
-      content.put(Person.AUTHORISED, 1);
-    }
-    else
-    {
-      content.put(Person.AUTHORISED, 0);
-    }
+    content.put(Person.AUTHORISED, getAuthorisedDBValue(authorised));
     content.put(Person.SMS_COUNT, 0);
     
     long ret = db.insert(TABLE_PERSONS, null, content);
@@ -105,8 +98,24 @@ public class StalkerDatabase extends SQLiteOpenHelper
   public void deletePerson(long rowid)
   {
     SQLiteDatabase db = this.getWritableDatabase();
-    db.delete(TABLE_PERSONS, "rowid = ?", 
-        new String[]{String.valueOf(rowid)});
+    int ret = db.delete(TABLE_PERSONS, "rowid = ?", 
+                        new String[]{String.valueOf(rowid)});
+    if (ret != 1)
+    {
+      Log.d(TAG, String.format("Deleting rowid %d returned %d", rowid, ret));
+    }
+    db.close();
+  }
+  
+  public void deletePerson(String number)
+  {
+    SQLiteDatabase db = this.getWritableDatabase();
+    int ret = db.delete(TABLE_PERSONS, Person.NUMBER + " = ?", 
+                        new String[]{number});
+    if (ret != 1)
+    {
+      Log.d(TAG, String.format("Deleting number %s returned %d", number, ret));
+    }
     db.close();
   }
   
@@ -115,32 +124,120 @@ public class StalkerDatabase extends SQLiteOpenHelper
     Person person = null;
     SQLiteDatabase db = this.getReadableDatabase();
     Cursor cursor = db.rawQuery("select rowid, * from " + TABLE_PERSONS +
-        " WHERE rowid = ?", new String[]{String.valueOf(rowid)});
+        " where rowid = ?", new String[]{String.valueOf(rowid)});
     
     if (cursor.moveToFirst())
     {
-      person = new Person();
-      person.name = cursor.getString(cursor.getColumnIndex(Person.NAME));
-      person.number = cursor.getString(cursor.getColumnIndex(Person.NUMBER));
-      int auth = cursor.getInt(cursor.getColumnIndex(Person.AUTHORISED));
-      if (auth != 0)
-      {
-        person.authorised = true;
-      }
-      else
-      {
-        person.authorised = false;
-      }
-      person.smscount = cursor.getInt(cursor.getColumnIndex(Person.SMS_COUNT));
+      person = toPerson(cursor);
     }
+    
+    cursor.close();
+    db.close();
+    return person;
+  }
+  
+  public Person getPersonFromNumber(String number)
+  {
+    Person person = null;
+    SQLiteDatabase db = this.getReadableDatabase();
+    Cursor cursor = db.rawQuery("select * from " + TABLE_PERSONS +
+        " where " + Person.NUMBER + " = ?", new String[]{number});
+    
+    if (cursor.moveToFirst())
+    {
+      person = toPerson(cursor);
+    }
+    
+    cursor.close();
+    db.close();
     return person;
   }
   
   public boolean isAuthorisedNumber(String number)
   {
-    /* TODO: Implement...
+    boolean ret = false;
+    SQLiteDatabase db = this.getReadableDatabase();
+    Cursor cursor = db.rawQuery("select * from " + TABLE_PERSONS +
+        " where " + Person.NUMBER + " = ?", new String[]{number});
+    
+    if (cursor.moveToFirst())
+    {
+      ret = isCurrentAuthorised(cursor);
+    }
+    
+    cursor.close();
+    db.close();
+    return ret;
+  }
+  
+  public void increaseSMSCount(String number)
+  {
+    SQLiteDatabase db = this.getWritableDatabase();
+    db.execSQL("update " + TABLE_PERSONS + 
+          " set " + Person.SMS_COUNT + " = " + Person.SMS_COUNT + 
+          " + 1 where " + Person.NUMBER + " = ?",
+          new String[]{number});
+    db.close();
+  }
+  
+  public void updatePerson(Person person, boolean chname, boolean chauth, boolean chsmscount)
+  {
+    /* This method can't update the number...
+     * chname = true      means update name
+     * chauth = true      means update authorised state
+     * chsmscount = true  means update sms-count
      * */
-    return false;
+    
+    if (chname || chauth || chsmscount)
+    {
+      ContentValues content = new ContentValues();
+      
+      if (chname)
+        content.put(Person.NAME, person.name);
+      
+      if (chauth)
+        content.put(Person.AUTHORISED, getAuthorisedDBValue(person.authorised));
+      
+      if (chsmscount)
+        content.put(Person.SMS_COUNT, person.smscount);
+      
+      SQLiteDatabase db = this.getWritableDatabase();
+      int ret = db.update(TABLE_PERSONS, content, Person.NUMBER + " = ?",
+                          new String[]{person.number});
+      
+      if (ret != 1)
+      {
+        Log.d(TAG, String.format("updatePerson: number=%s; rows-affected=%d",
+                                 person.number, ret));
+      }
+      
+      db.close();
+    }
+    else
+    {
+      Log.d(TAG, "Update Person: nothing to update...");
+    }
+  }
+  
+  protected static boolean isCurrentAuthorised(Cursor cursor)
+  {
+    int auth = cursor.getInt(cursor.getColumnIndex(Person.AUTHORISED));
+    if (auth != 0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  
+  protected static int getAuthorisedDBValue(boolean authorised)
+  {
+    if (authorised)
+      return 1;
+    else
+      return 0;
   }
   
   public static Person toPerson(Cursor cursor)
@@ -148,15 +245,7 @@ public class StalkerDatabase extends SQLiteOpenHelper
     Person person = new Person();
     person.name = cursor.getString(cursor.getColumnIndex(Person.NAME));
     person.number = cursor.getString(cursor.getColumnIndex(Person.NUMBER));
-    int auth = cursor.getInt(cursor.getColumnIndex(Person.AUTHORISED));
-    if (auth != 0)
-    {
-      person.authorised = true;
-    }
-    else
-    {
-      person.authorised = false;
-    }
+    person.authorised = isCurrentAuthorised(cursor);
     person.smscount = cursor.getInt(cursor.getColumnIndex(Person.SMS_COUNT));
     return person;
   }

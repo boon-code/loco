@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+  
+  <TextView android:id="@+id/key_name"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="25sp"
+    android:gravity="left"
+    android:text="Name:"
+  />
+  
+  <TextView android:id="@+id/txt_name"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="22sp"
+    android:gravity="right"
+    android:paddingBottom="10sp"
+  />
+  
+  <TextView android:id="@+id/key_number"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="25sp"
+    android:gravity="left"
+    android:text="Phone Number:"
+  />
+  
+  <TextView android:id="@+id/txt_number"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="22sp"
+    android:gravity="right"
+    android:paddingBottom="10sp"
+  />
+  
+  <TextView android:id="@+id/key_sms"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="25sp"
+    android:gravity="left"
+    android:text="SMS Count:"
+  />
+  
+  <TextView android:id="@+id/txt_smscount"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="22sp"
+    android:gravity="right"
+    android:paddingBottom="10sp"
+  />
+  
+  <TextView android:id="@+id/key_auth"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="25sp"
+    android:gravity="left"
+    android:text="Authorised Buddy:"
+  />
+  
+  <CheckBox android:id="@+id/chk_auth"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Authorised"
+    android:textSize="22sp"
+    android:gravity="right"
+    android:onClick="onAuthorisationChanged"
+  />
+
+</LinearLayout>
+

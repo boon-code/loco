@@ -3,7 +3,7 @@
   package="org.booncode.android.loco">
   <application android:icon="@drawable/prog_icon" android:label="@string/prog_name" android:theme="@android:style/Theme.NoTitleBar">
     
-    <activity android:name=".SettingsActivity" android:screenOrientation="portrait"
+    <activity android:name=".MainActivity" android:screenOrientation="portrait"
       android:launchMode="singleTop">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -11,12 +11,18 @@
       </intent-filter>
     </activity>
     
-    <activity android:name=".AuthorisationActivity" android:launchMode="singleTop"/>
+    <activity android:name=".BuddyListActivity" android:launchMode="singleTop" />
+    
+    <activity android:name=".BuddyActivity" android:launchMode="singleTop" />
+    
+    <activity android:name=".LocateBuddyListActivity" android:launchMode="singleTop" />
+    
+    <activity android:name=".GsmCellActivity" android:launchMode="singleTop" />
+    
+    <activity android:name=".CdmaCellActivity" android:launchMode="singleTop" />
+    
     
     <service android:name=".Stalker">
-      <intent-filter>
-        <action android:name="org.booncode.android.loco.Stalker" />
-      </intent-filter>
     </service>
       
     <receiver android:name=".MsgReceiver">
@@ -35,5 +41,7 @@
   <uses-permission android:name="android.permission.SEND_SMS" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
   <uses-permission android:name="android.permission.READ_CONTACTS" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_UPDATES" />
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
   
 </manifest>
