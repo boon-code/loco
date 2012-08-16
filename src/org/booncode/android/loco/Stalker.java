@@ -41,7 +41,6 @@ public class Stalker extends Service implements LocationListener
   public static final int CMD_RECEIVE_RESULT_POSITION = 2;
   public static final int CMD_RECEIVE_RESULT_CELLS = 3;
   public static final int CMD_WAKE = 4;
-  public static final int CMD_TEST = 5;
   
   /*! \brief After this period of time, locating will return the location
    * 
@@ -56,7 +55,8 @@ public class Stalker extends Service implements LocationListener
   //! \brief Maximum time a location is valid (Currently 1 minute).
   protected static final long LOCATING_MAX_AGE = 2 * 60 * 1000;
   
-  protected static final long WAKE_UP_TIMEOUT = 5 * 1000;
+  protected static final long WAKE_UP_TIMEOUT_FAST = 5 * 1000;
+  protected static final long WAKE_UP_TIMEOUT_SLOW = 30 * 1000;
   
   protected static final int MAX_NOTIFY_ID_COUNT = 20;
   
@@ -80,6 +80,7 @@ public class Stalker extends Service implements LocationListener
   protected NotificationManager   m_notify_man;
   protected TelephonyManager      m_tel_man;
   protected StalkerDatabase       m_db;
+  protected ApplicationSettings   m_settings;
   protected PowerManager.WakeLock m_lock;
   protected List<LocRequest>      m_requests = new LinkedList<LocRequest>();
   protected Location              m_best_location = null;
@@ -110,7 +111,6 @@ public class Stalker extends Service implements LocationListener
     }
   }
   
-  
   @Override
   public void onCreate()
   {
@@ -128,6 +128,9 @@ public class Stalker extends Service implements LocationListener
     intent.putExtra(EXTRA_KEY_CMD, CMD_WAKE);
     m_wake_intent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     m_loc_shutoff_time = SystemClock.elapsedRealtime();
+    
+    m_settings = new ApplicationSettings(this);
+    m_current_notify_id = m_settings.getNotifyID();
   }
     
   @Override
@@ -257,7 +260,7 @@ public class Stalker extends Service implements LocationListener
         enableLocationListener();
         m_requests.add(req);
         m_loc_shutoff_time = SystemClock.elapsedRealtime() + LOCATING_SHUTOFF_TIME;
-        setNextAlarm();
+        setNextAlarm(true);
       }
       else
       {
@@ -271,11 +274,22 @@ public class Stalker extends Service implements LocationListener
     }
   }
   
-  private void setNextAlarm()
+  private void setNextAlarm(boolean fast)
   {
-    Log.d(TAG, "Setting up next alarm...");
-    m_alarm_man.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-        SystemClock.elapsedRealtime() + WAKE_UP_TIMEOUT, m_wake_intent);
+    long next_time = SystemClock.elapsedRealtime();
+    
+    if (fast)
+    {
+      next_time += WAKE_UP_TIMEOUT_FAST;
+      Log.d(TAG, String.format("Setting up next alarm (+%d)", WAKE_UP_TIMEOUT_FAST));
+    }
+    else
+    {
+      next_time += WAKE_UP_TIMEOUT_SLOW;
+      Log.d(TAG, String.format("Setting up next alarm (+%d)", WAKE_UP_TIMEOUT_SLOW));
+    }
+    
+    m_alarm_man.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, next_time, m_wake_intent);
   }
   
   private boolean isLocationUseable()
@@ -299,7 +313,7 @@ public class Stalker extends Service implements LocationListener
       String longitude = Double.toString(m_best_location.getLongitude());
       m_db.increaseSMSCount(number);
       
-      TelephonyUtils.sendSMS(number, String.format(POSITION_SMS, latitude, longitude));
+      Utils.sendSMS(number, String.format(POSITION_SMS, latitude, longitude));
     }
     else
     {
@@ -341,7 +355,7 @@ public class Stalker extends Service implements LocationListener
       if (data != null)
       {
         m_db.increaseSMSCount(number);
-        TelephonyUtils.sendSMS(number, data);
+        Utils.sendSMS(number, data);
       }
       else
       {
@@ -388,13 +402,14 @@ public class Stalker extends Service implements LocationListener
     else
     {
       Log.d(TAG, String.format("Current Timestamp %d, Timeout: %d", timestamp, m_loc_shutoff_time));
-      setNextAlarm();
+      setNextAlarm((open_reqs > 0));
     }
   }
   
   private int increaseNotifyID()
   {
     m_current_notify_id = (m_current_notify_id + 1) % MAX_NOTIFY_ID_COUNT;
+    m_settings.setNotifyID(m_current_notify_id);
     return m_current_notify_id;
   }
   
@@ -427,7 +442,7 @@ public class Stalker extends Service implements LocationListener
       if (m.matches() && (person != null))
       {
         MatchResult result = m.toMatchResult();
-        String geo = String.format("geo:0,0?q=%s,%s (%s)", result.group(1), result.group(2), person.name);
+        String geo = Utils.formatGeoData(result.group(1), result.group(2), person.name);
         addPositionNotify(person, geo);
       }
       else
@@ -587,20 +602,6 @@ public class Stalker extends Service implements LocationListener
       
       case CMD_WAKE:
         wakeStalker();
-        break;
-      
-      case CMD_TEST:
-        String number = m_tel_man.getLine1Number();
-        if (number != null)
-        {
-          Log.d(TAG, "Line1-number: " + number);
-        }
-        else
-        {
-          Log.d(TAG, "Line1-number not available");
-        }
-        
-        shutdownEventually();
         break;
       
       default:

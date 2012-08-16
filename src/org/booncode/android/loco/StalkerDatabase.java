@@ -95,6 +95,13 @@ public class StalkerDatabase extends SQLiteOpenHelper
     return db.rawQuery("select rowid _id, * from " + TABLE_PERSONS, null);
   }
   
+  public Cursor queryAllAuthorisedPersons()
+  {
+    SQLiteDatabase db = this.getReadableDatabase();
+    return db.rawQuery("select rowid _id, * from " + TABLE_PERSONS +
+                       " where " + Person.AUTHORISED + " <> 0", null);
+  }
+  
   public void deletePerson(long rowid)
   {
     SQLiteDatabase db = this.getWritableDatabase();

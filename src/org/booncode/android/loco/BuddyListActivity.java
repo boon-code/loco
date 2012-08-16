@@ -26,6 +26,7 @@ import android.widget.Toast;
 public class BuddyListActivity extends ListActivity
 {
   protected static final String TAG = "loco.BuddyListActivity";
+  
   protected static final int REQUEST_CONTACT = 1;
   
   protected SimpleCursorAdapter m_adapter;
@@ -63,13 +64,18 @@ public class BuddyListActivity extends ListActivity
   {
     switch (item.getItemId())
     {
-      case R.id.bla_btn_add:
-          Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-          startActivityForResult(intent, REQUEST_CONTACT);
+      case R.id.buddy_list_mnu_add:
+        Intent pick_intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+        startActivityForResult(pick_intent, REQUEST_CONTACT);
         return true;
       
-      case R.id.bla_btn_back:
+      case R.id.buddy_list_mnu_back:
         this.finish(); 
+        return true;
+      
+      case R.id.buddy_list_mnu_add_direct:
+        Intent direct_intent = new Intent(this, DirectAddActivity.class);
+        startActivity(direct_intent);
         return true;
       
       default:
@@ -102,20 +108,28 @@ public class BuddyListActivity extends ListActivity
             return;
           }
           
-          String number = TelephonyUtils.formatTelephoneNumber(cursor.getString(idx_number));
+          String number = Utils.formatTelephoneNumber(cursor.getString(idx_number));
           String name = cursor.getString(idx_name);
           
-          Toast.makeText(this, name + ": " + number, Toast.LENGTH_LONG).show();
-          
-          StalkerDatabase db = new StalkerDatabase(getApplicationContext());
-          boolean ret = db.addPerson(number, name, true);
-          
-          if (!ret)
+          if (number.startsWith("+"))
           {
-            Toast.makeText(this, "Couldn't add person...", Toast.LENGTH_LONG).show();
+            StalkerDatabase db = new StalkerDatabase(getApplicationContext());
+            boolean ret = db.addPerson(number, name, true);
+            
+            if (!ret)
+            {
+              Toast.makeText(this, "Couldn't add person...", Toast.LENGTH_LONG).show();
+            }
+            
+            db.close();
           }
-          
-          db.close();
+          else
+          {
+            Intent fix_intent = new Intent(this, FixNumberActivity.class);
+            fix_intent.putExtra(FixNumberActivity.FIX_NUMBER, number);
+            fix_intent.putExtra(FixNumberActivity.FIX_NAME, name);
+            startActivity(fix_intent);
+          }
         }
         else
         {

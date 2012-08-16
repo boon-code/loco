@@ -28,7 +28,7 @@ public class MsgReceiver extends BroadcastReceiver
       
       if (text.startsWith(LOCO_CMD_START))
       {
-        String number = TelephonyUtils.formatTelephoneNumber(msg.getOriginatingAddress());
+        String number = Utils.formatTelephoneNumber(msg.getOriginatingAddress());
         if (number != null)
         {
           StalkerDatabase db = new StalkerDatabase(m_context.getApplicationContext());
@@ -137,7 +137,7 @@ public class MsgReceiver extends BroadcastReceiver
   }
   
   @Override
-  public void onReceive(Context context, Intent intent) 
+  public void onReceive(Context context, Intent intent)
   {
     String action = intent.getAction();
     

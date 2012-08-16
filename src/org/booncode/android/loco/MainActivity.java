@@ -20,9 +20,11 @@ import android.telephony.SmsManager;
 import android.widget.EditText;
 import android.widget.Toast;
 import java.util.regex.*;
+import android.util.Log;
 
 public class MainActivity extends Activity
 {
+  protected static final String TAG = "loco.MainActivity";
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
@@ -30,38 +32,34 @@ public class MainActivity extends Activity
     this.setContentView(R.layout.main_layout);
   }
   
-  /*
-  protected void sendSMS(String number, String text)
-  {
-    Intent intent = new Intent(this, SettingsActivity.class);
-    PendingIntent pending_intent = PendingIntent.getActivity(this, 0, intent, 0);
-    SmsManager man = SmsManager.getDefault();
-    man.sendTextMessage(number, null, text, pending_intent, null);
-  }
-  * */
-  
-  public void locateCMD(View v)
+  public void onLocateBuddy(View v)
   {
     Intent intent = new Intent(this, LocateBuddyListActivity.class);
     startActivity(intent);
   }
   
-  public void quitApp(View v)
+  public void onQuit(View v)
   {
     this.finish();
     Toast.makeText(this, "Bye!", Toast.LENGTH_LONG).show();
   }
   
-  public void manageAuth(View v)
+  public void onShowSettings(View v)
+  {
+    Intent intent = new Intent(this, SettingsActivity.class);
+    startActivity(intent);
+  }
+  
+  public void onManageBuddyList(View v)
   {
     Intent intent = new Intent(this, BuddyListActivity.class);
     startActivity(intent);
   }
   
-  public void test(View v)
+  public void onTestSim(View v)
   {
-    Intent intent = new Intent(this, Stalker.class);
-    intent.putExtra(Stalker.EXTRA_KEY_CMD, Stalker.CMD_TEST);
-    startService(intent);
+    Intent sim_check_intent = new Intent(this, SimCheckingService.class);
+    startService(sim_check_intent);
   }
+  
 }

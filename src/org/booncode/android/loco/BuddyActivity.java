@@ -42,10 +42,10 @@ public class BuddyActivity extends Activity
     super.onCreate(savedInstanceState);
     this.setContentView(R.layout.buddy_layout);
     
-    m_txt_name = (TextView)findViewById(R.id.txt_name);
-    m_txt_number = (TextView)findViewById(R.id.txt_number);
-    m_txt_smscount = (TextView)findViewById(R.id.txt_smscount);
-    m_chk_auth = (CheckBox)findViewById(R.id.chk_auth);
+    m_txt_name = (TextView)findViewById(R.id.buddy_txt_name);
+    m_txt_number = (TextView)findViewById(R.id.buddy_txt_number);
+    m_txt_smscount = (TextView)findViewById(R.id.buddy_txt_smscount);
+    m_chk_auth = (CheckBox)findViewById(R.id.buddy_chk_auth);
     
     m_db = new StalkerDatabase(getApplicationContext());
   }
@@ -84,7 +84,7 @@ public class BuddyActivity extends Activity
   
   public void onAuthorisationChanged(View v)
   {
-    if (v.getId() == R.id.chk_auth)
+    if (v.getId() == R.id.buddy_chk_auth)
     {
       CheckBox cbox = (CheckBox)v;
       StalkerDatabase.Person person = new StalkerDatabase.Person();
@@ -107,13 +107,18 @@ public class BuddyActivity extends Activity
   {
     switch (item.getItemId())
     {
-      case R.id.back:
+      case R.id.buddy_mnu_back:
         this.finish();    
         return true;
       
-      case R.id.delete:
+      case R.id.buddy_mnu_delete:
         m_db.deletePerson(m_number);
         this.finish();
+        return true;
+      
+      case R.id.buddy_mnu_locate:
+        Utils.sendLocateSMS(m_number);
+        Toast.makeText(this, "Locating...", Toast.LENGTH_LONG).show();
         return true;
       
       default:

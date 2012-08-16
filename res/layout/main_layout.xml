@@ -5,38 +5,46 @@
   android:layout_height="fill_parent">
   
   <Button  
-    android:id="@+id/btn_manage"
+    android:id="@+id/main_btn_manage"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="Manage authorised numbers" 
-    android:onClick="manageAuth"
+    android:onClick="onManageBuddyList"
   />
   
   <Button
-    android:id="@+id/btn_locate"
+    android:id="@+id/main_btn_locate"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="Locate phone"
-    android:onClick="locateCMD"
+    android:onClick="onLocateBuddy"
   />
   
   <Button
-    android:id="@+id/btn_quit"
+    android:id="@+id/main_btn_settings"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="Settings"
+    android:onClick="onShowSettings"
+  />
+  
+  <Button
+    android:id="@+id/main_btn_test"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="SimProtect Test"
+    android:onClick="onTestSim"
+  />
+  
+  <Button
+    android:id="@+id/main_btn_quit"
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="Quit"
-    android:onClick="quitApp"
+    android:onClick="onQuit"
   />
   
-  <Button
-    android:id="@+id/btn_test"
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="Test"
-    android:onClick="test"
-  />
-  
-  <TextView android:id="@+id/text"
+  <TextView android:id="@+id/main_text"
     android:layout_width="wrap_content"
     android:layout_height="fill_parent"
     android:textColor="#FFF"

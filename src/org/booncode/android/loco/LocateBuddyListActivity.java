@@ -74,7 +74,7 @@ public class LocateBuddyListActivity extends ListActivity
       Log.d(TAG, String.format("Clicked on Person name=%s, number=%s, sms=%d, auth=%s",
           person.name, person.number, person.smscount, auth));
       
-      Log.d(TAG, "SEND SMS to " + person.number);
+      Utils.sendLocateSMS(person.number);
       this.finish();
     }
   }

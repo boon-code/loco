@@ -30,16 +30,67 @@ public class CdmaCellActivity extends Activity
   
   protected static final String TAG = "loco.CdmaCellActivity";
   
+  protected TextView m_txt_data;
+  
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    this.setContentView(R.layout.cdma_layout);
+    
+    m_txt_data = (TextView)findViewById(R.id.cdma_txt_data);
+  }
+  
+  private boolean readData()
+  {
+    Intent intent = getIntent();
+    
+    if (intent == null)
+    {
+      Log.e(TAG, "readData: got null intent...");
+      return false;
+    }
+    
+    String data[] = intent.getStringArrayExtra(EXTRA_KEY_CDMA_DATA);
+    
+    if (data == null)
+    {
+      Log.e(TAG, "readData: cdma-data is null");
+      return false;
+    }
+    
+    if (data.length != 5)
+    {
+      Log.e(TAG, "readData: wrong format: expect 5 strings...");
+      return false;
+    }
+    
+    StringBuilder b = new StringBuilder();
+    
+    b.append("BaseStationID: ");
+    b.append(data[0]);
+    b.append("\nBaseStationLatitude: ");
+    b.append(data[1]);
+    b.append("\nBaseStationLongitude: ");
+    b.append(data[2]);
+    b.append("\nNetworkID: ");
+    b.append(data[3]);
+    b.append("\nSystemID: ");
+    b.append(data[4]);
+    
+    m_txt_data.setText(b.toString());
+    return true;
   }
   
   @Override
   public void onStart()
   {
     super.onStart();
+    
+    if (!readData())
+    {
+      m_txt_data.setText("Couldn't retrieve data from intent");
+    }
   }
   
   @Override

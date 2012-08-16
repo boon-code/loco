@@ -4,7 +4,7 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent">
   
-  <TextView android:id="@+id/buddy_key_name"
+  <TextView android:id="@+id/fix_key_name"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:textSize="22sp"
@@ -12,7 +12,7 @@
     android:text="Name:"
   />
   
-  <TextView android:id="@+id/buddy_txt_name"
+  <TextView android:id="@+id/fix_txt_name"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:textSize="20sp"
@@ -20,7 +20,16 @@
     android:paddingBottom="10sp"
   />
   
-  <TextView android:id="@+id/buddy_key_number"
+  <TextView android:id="@+id/fix_txt_desc"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="17sp"
+    android:text="You have to enter the number in International Direct Dialling Format (f.e.: Austria 0123/123456789, IDD: +43123123456789)"
+    android:gravity="right"
+    android:paddingBottom="10sp"
+  />
+  
+  <TextView android:id="@+id/fix_key_number"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:textSize="22sp"
@@ -28,46 +37,29 @@
     android:text="Phone Number:"
   />
   
-  <TextView android:id="@+id/buddy_txt_number"
+  <EditText android:id="@+id/fix_txt_number"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:textSize="20sp"
     android:gravity="right"
+    android:inputType="phone"
     android:paddingBottom="10sp"
   />
   
-  <TextView android:id="@+id/buddy_key_sms"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="22sp"
-    android:gravity="left"
-    android:text="SMS Count:"
+  <Button
+    android:id="@+id/fix_btn_save"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="Save Buddy"
+    android:onClick="onSave"
   />
   
-  <TextView android:id="@+id/buddy_txt_smscount"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20sp"
-    android:gravity="right"
-    android:paddingBottom="10sp"
-  />
-  
-  <TextView android:id="@+id/buddy_key_auth"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="22sp"
-    android:gravity="left"
-    android:text="Authorised Buddy:"
-  />
-  
-  <CheckBox android:id="@+id/buddy_chk_auth"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="Authorised"
-    android:textSize="20sp"
-    android:gravity="right"
-    android:onClick="onAuthorisationChanged"
+  <Button
+    android:id="@+id/fix_btn_cancel"
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="Cancel"
+    android:onClick="onCancel"
   />
 
 </LinearLayout>
-

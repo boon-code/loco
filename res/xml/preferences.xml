@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory android:title="Loco Settings">
+  
+    <CheckBoxPreference android:key="theftmode"
+      android:title="Theft Mode"
+      android:summary="Is this phone in theft mode?"
+      android:defaultValue="false"
+    />
+    
+    <CheckBoxPreference android:key="simpro"
+      android:title="SIM Protection"
+      android:summary="If this is set to true, sim protection is enabled! Note that you have to set your phone-number (Button)!"
+      android:defaultValue="false"
+    />
+    
+  </PreferenceCategory>
+  
+</PreferenceScreen>

@@ -4,10 +4,41 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent">
   
-  <TextView android:id="@+id/txt_gsm_data"
+  <TextView android:id="@+id/gsm_txt_raw"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Raw Data from SMS:"
+    android:textSize="20sp"
     android:textColor="#FFF"
+  />
+  
+  <TextView android:id="@+id/gsm_txt_data"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="15sp"
+    android:textColor="#FFF"
+  />
+  
+  <Button
+    android:id="@+id/gsm_btn_findposition"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Find position"
+    android:onClick="onFindPositionClicked"
+  />
+  
+  <TextView android:id="@+id/gsm_txt_browser"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="15sp"
+    android:textColor="#FFF"
+  />
+  
+  <Button android:id="@+id/gsm_btn_maps"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Show Google Maps"
+    android:onClick="onShowMaps"
   />
 
 </LinearLayout>

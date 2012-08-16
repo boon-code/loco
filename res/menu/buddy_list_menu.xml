@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/bla_btn_add"
+  <item android:id="@+id/buddy_list_mnu_add"
       android:title="Add"
   />
+  
+  <item android:id="@+id/buddy_list_mnu_add_direct"
+      android:title="Add Direct"
+  />
 
-  <item android:id="@+id/bla_btn_back" 
+  <item android:id="@+id/buddy_list_mnu_back" 
       android:title="Back"
   />
 </menu>
