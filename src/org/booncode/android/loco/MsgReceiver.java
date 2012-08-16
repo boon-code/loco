@@ -13,7 +13,7 @@ public class MsgReceiver extends BroadcastReceiver
   public static final String LOCO_CMD_START = "@+";
   public static final String LOCO_CMD_LOCATE = LOCO_CMD_START + "locate";
   public static final String LOCO_CMD_VIEW_POSITION = LOCO_CMD_START + "geo:";
-  public static final String LOCO_CMD_VIEW_CELLS = LOCO_CMD_START + "cell-";
+  public static final String LOCO_CMD_VIEW_CELLS = LOCO_CMD_START + "cell";
   
   protected static final String TAG = "loco.MsgReceiver";
   private Context m_context = null;

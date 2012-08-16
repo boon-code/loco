@@ -69,9 +69,9 @@ public class Stalker extends Service implements LocationListener
   
   protected static final String TAG = "loco.Stalker";
   protected static final Pattern RE_GEO = Pattern.compile("^\\s*(\\d+.\\d*)\\s*,\\s*(\\d+.\\d*)\\s*$");
-  protected static final Pattern RE_GSM_CELL = Pattern.compile("^gsm:\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$");
+  protected static final Pattern RE_GSM_CELL = Pattern.compile("^-gsm:\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$");
   
-  protected static final Pattern RE_CDMA_CELL = Pattern.compile("^cdma:\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$");
+  protected static final Pattern RE_CDMA_CELL = Pattern.compile("^-cdma:\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*$");
   protected static final String POSITION_SMS = MsgReceiver.LOCO_CMD_VIEW_POSITION + "%s, %s";
   
   protected final IBinder         m_binder = new PrivateBinder();
