@@ -136,9 +136,29 @@ public class Stalker extends Service implements LocationListener
   @Override
   public void onLocationChanged(Location location)
   {
-    Log.d(TAG, String.format("Location update: lat=%s, long=%s",
+    String provider = location.getProvider();
+    if (provider == null)
+    {
+      provider = "null";
+    }
+    
+    Log.d(TAG, String.format("Location update: lat=%s, long=%s (%s)",
         String.valueOf(location.getLatitude()),
-        String.valueOf(location.getLongitude())));
+        String.valueOf(location.getLongitude()),
+        provider));
+    
+    if (!provider.equals(LocationManager.GPS_PROVIDER))
+    {
+      if (m_tel_man.getDataState() != TelephonyManager.DATA_CONNECTED)
+      {
+        Log.d(TAG, "onLocationChanged: Stop lying to me, android-bitch!");
+        return;
+      }
+      else
+      {
+        Log.d(TAG, "onLocationChanged: Data connection on...");
+      }
+    }
     
     if (m_best_location != null)
     {
