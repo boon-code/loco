@@ -19,6 +19,10 @@ public class SimCheckingService extends Service
   protected static final String TAG = "loco.SimCheckingService";
   protected static final long WAKE_UP_TIMEOUT = 2 * 60 * 1000;
   
+  protected static final String STOLEN_MESSAGE = "My phone (nr: %s) got stolen or I forgot about my anti-theft software (new-nr: %s)! Please contact me in person!";
+  protected static final String STOLEN_MESSAGE_SHORT = "Phone (nr: %s) got maybe stolen! New number: %s; Please contact me in person!";
+  protected static final int MAX_SMS_SIZE = 160;
+  
   protected AlarmManager          m_alarm_man;
   protected StalkerDatabase       m_db;
   protected ApplicationSettings   m_settings;
@@ -82,13 +86,25 @@ public class SimCheckingService extends Service
   
   private void notifyBuddies(String newnumber)
   {
+    String message = String.format(STOLEN_MESSAGE, m_number, newnumber);
+    if (message.length() > MAX_SMS_SIZE)
+    {
+      message = String.format(STOLEN_MESSAGE_SHORT, m_number, newnumber);
+      if (message.length() > MAX_SMS_SIZE)
+      {
+        Log.e(TAG, "notifyBuddies: Can't format stolen-message, number too long");
+        return;
+      }
+    }
+    
     Cursor cursor = m_db.queryAllPersons();
-    // TODO: or all Persons...
+    
     while(cursor.moveToNext())
     {
       StalkerDatabase.Person person = StalkerDatabase.toPerson(cursor);
-      Log.d(TAG, String.format("Send SMS to %s (%s): My phone got stolen -> new number: %s, original: %s", person.name, person.number, newnumber, m_number));
-      // TODO: really send sms...
+      Log.w(TAG, String.format("Send SMS to %s (%s): My phone got stolen -> new number: %s, original: %s", person.name, person.number, newnumber, m_number));
+      
+      Utils.sendSMS(person.number, message);
     }
     cursor.close();
   }
