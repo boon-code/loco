@@ -14,22 +14,43 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import java.lang.*;
 
+
+/*! \brief This service class is used to check current SIM card.
+ * 
+ *  This class is used to check Sim card (if sim-protection is enabled)
+ * */
 public class SimCheckingService extends Service
 {
+  //! TAG used to identify debug messages from this service.
   protected static final String TAG = "loco.SimCheckingService";
+  //! If Sim Card is not available, service tries again after this time (ms).
   protected static final long WAKE_UP_TIMEOUT = 2 * 60 * 1000;
-  
+  //! Message that will be sent if Sim Card has been changed.
   protected static final String STOLEN_MESSAGE = "My phone (nr: %s) got stolen or I forgot about my anti-theft software (new-nr: %s)! Please contact me in person!";
+  //! Short version of #STOLEN_MESSAGE.
   protected static final String STOLEN_MESSAGE_SHORT = "Phone (nr: %s) got maybe stolen! New number: %s; Please contact me in person!";
+  //! Maximum number of characters of an sms.
   protected static final int MAX_SMS_SIZE = 160;
   
   protected AlarmManager          m_alarm_man;
+  //! Database of a list of persons that will be notified if SIM card has been changed.
   protected StalkerDatabase       m_db;
+  //! Object to check if this service is enabled.
   protected ApplicationSettings   m_settings;
+  //! Wake-lock used to keep cpu running.
   protected PowerManager.WakeLock m_lock;
+  //! Intent used to wake this service (if Sim card hasn't been available).
   protected PendingIntent         m_wake_intent;
+  //! Line1 number that had been saved to #m_settings.
   protected String                m_number;
   
+  
+  /*! \brief Callback method (Service), called when this service is
+   *         created.
+   * 
+   *  This method sets up a reference to AlarmManager and creates 
+   *  instances to access database settings...
+   * */
   @Override
   public void onCreate()
   {
@@ -45,12 +66,26 @@ public class SimCheckingService extends Service
     m_settings = new ApplicationSettings(this);
   }
   
+  /*! \brief Callback method (Service) used to bind this service to
+   *         some other component.
+   * 
+   *  \param intent The intent of this binding.
+   *  \return Returns \c null (binding disabled).
+   * */
   @Override
   public IBinder onBind(Intent intent)
   {
     return null;
   }
   
+  /*! \brief Helper method to release the wake-lock of this service.
+   * 
+   *  The wake-lock (#m_lock) is used to prevent the cpu from going into
+   *  idle state. After this method has been called, cpu is allowed to
+   *  go into idle state again.
+   * 
+   *  \see acquireLock to enable wake-lock.
+   * */
   protected void releaseLock()
   {
     if (m_lock.isHeld())
@@ -64,6 +99,14 @@ public class SimCheckingService extends Service
     }
   }
   
+  /*! \brief Helper method to acquire the wake-lock of this service.
+   * 
+   *  The wake-lock (#m_lock) is used to prevent the cpu from going into
+   *  idle state. After this method has been called, cpu is not allowed
+   *  to go into idle state.
+   * 
+   *  \see releaseLock to release wake-lock.
+   * */
   protected void acquireLock()
   {
     if (!m_lock.isHeld())
@@ -77,6 +120,10 @@ public class SimCheckingService extends Service
     }
   }
   
+  /*! \brief Helper method that sets up an alarm to wake the device.
+   * 
+   *  Wakes the device in #WAKE_UP_TIMEOUT ms.
+   * */
   private void setNextAlarm()
   {
     long next_time = SystemClock.elapsedRealtime() + WAKE_UP_TIMEOUT;
@@ -84,6 +131,14 @@ public class SimCheckingService extends Service
     m_alarm_man.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, next_time, m_wake_intent);
   }
   
+  /*! \brief Helper method that sends a message to one buddy.
+   * 
+   *  First tries to send long message #STOLEN_MESSAGE. If this message
+   *  exceeds the maximum sms size (#MAX_SMS_SIZE) a short version will
+   *  be sent (#STOLEN_MESSAGE_SHORT). If this message also exceeds the
+   *  maximum size, no message will be sent and the error will be 
+   *  reported to \c Log.
+   * */
   private void notifyBuddies(String newnumber)
   {
     String message = String.format(STOLEN_MESSAGE, m_number, newnumber);
@@ -109,6 +164,14 @@ public class SimCheckingService extends Service
     cursor.close();
   }
   
+  /*! \brief This method tries to check the sim card (line1 number).
+   * 
+   *  If the Sim-card is not ready yet, an alarm is set up to wake
+   *  the device after a timeout of #WAKE_UP_TIMEOUT ms.
+   * 
+   *  \see notifyBuddies Will be called if Sim card has got a different
+   *       line1 number as specified in #m_settings.
+   * */
   private void checkSimCard()
   {
     String current_number = Utils.getLine1Number(this);
@@ -153,6 +216,11 @@ public class SimCheckingService extends Service
     }
   }
   
+  /*! \brief Helper method that retrieves current settings and if
+   *         Sim-protection is enabled, checks current Sim card.
+   * 
+   *  \see checkSimCard This method tries to check the sim card.
+   * */
   protected void process()
   {
     m_number = m_settings.getLine1Number();
@@ -176,6 +244,21 @@ public class SimCheckingService extends Service
     }
   }
   
+  /*! \brief Callback method (Service), entry point of this Service.
+   * 
+   *  This method gets called if this service has been started by
+   *  an intent.
+   *  \param intent The intent that started this service.
+   *  \param flags Additional flags...
+   *  \param startId Some id.
+   *  \return A flag that determines whether the service should be
+   *          restarted after it got killed by the os. \c START_STICKEY
+   *          means, that this service will be restarted if the vm
+   *          got killed (while the service is active...).
+   * 
+   *  \see process This method checks settings and decides whether the 
+   *       service should be stopped, or kept running.
+   * */
   @Override
   public int onStartCommand(Intent intent, int flags, int startId)
   {
@@ -189,6 +272,12 @@ public class SimCheckingService extends Service
     return START_STICKY;
   }
   
+  /*! \brief Callback method (Service), called if service is about to 
+   *         stop.
+   * 
+   *  \note Note that this method doesn't have to be called. It's possible 
+   *        that the os kills this vm without calling this method.
+   * */
   @Override
   public void onDestroy()
   {
