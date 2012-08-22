@@ -17,26 +17,44 @@ import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+
+/*! \brief This class has got some utility functions (static).
+ * 
+ * */
 public class Utils
 {
+  //! TAG used to identify log messages from this class.
   protected static final String TAG = "loco.Utils";
+  //! Magic header that has to be sent to maps.
   protected static final byte[] MAPS_HEADER = new byte[] {0x00, 0x15, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                                           0x00, 0x00, 0x00, 0x02, 0x65, 0x6E, 0x00, 0x07,
                                                           0x41, 0x6E, 0x64, 0x72, 0x6F, 0x69, 0x64, 0x00,
                                                           0x03, 0x31, 0x2E, 0x30, 0x00, 0x03, 0x57, 0x65,
                                                           0x62, 0x1B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                                           0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00};
-  
+  //! Magic trailer that has to be sent to maps.
   protected static final byte[] MAPS_TRAILER = new byte[] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                                                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
   
+  
+  /*! \brief This class is used to return location and a flag that
+   *         indicates successs or failure.
+   * */
   public static class LocationResult
   {
+    //! Latitude of position (only valid if #success is \c true).
     public final double latitude;
+    //! Longitude of position (only valid if #sucess is \c true).
     public final double longitude;
+    //! Flag that indicates if the position is valid.
     public final boolean success;
     
+    /*! \brief Constructs a new instance.
+     * 
+     *  \param success Flag that indicates if position is valid.
+     *  \param latitude Latitude of position.
+     *  \param longitude Longitude of position.
+     * */
     public LocationResult(boolean success, double latitude, double longitude)
     {
       this.success = success;
@@ -44,6 +62,13 @@ public class Utils
       this.longitude = longitude;
     }
     
+    /*! \brief Constructs a new instance.
+     * 
+     *  #success is automatically set to \c true.
+     * 
+     *  \param latitude Latitude of position.
+     *  \param longitude Longitude of position.
+     * */
     public LocationResult(double latitude, double longitude)
     {
       this.success = true;
@@ -51,6 +76,7 @@ public class Utils
       this.longitude = longitude;
     }
     
+    //! Constructs an invalid position result (#success is \c false).
     public LocationResult()
     {
       this.success = false;
@@ -59,6 +85,12 @@ public class Utils
     }
   }
   
+  /*! \brief converts an integer to a byte array (big endian).
+   * 
+   *  \param value The value to convert.
+   *  \return A byte array in big endian format representing the original
+   *          value.
+   * */
   public static byte[] toBigEndianByteArray(int value)
   {
     byte[] data = new byte[4];
