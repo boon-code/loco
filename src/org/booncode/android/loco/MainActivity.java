@@ -38,6 +38,9 @@ public class MainActivity extends Activity
   
   /*! \brief Callback method (Activity), called if a instance
    *         of this activity has been created.
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
    * */
   @Override
   protected void onCreate(Bundle savedInstanceState)
