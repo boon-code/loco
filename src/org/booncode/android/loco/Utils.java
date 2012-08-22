@@ -44,7 +44,7 @@ public class Utils
   {
     //! Latitude of position (only valid if #success is \c true).
     public final double latitude;
-    //! Longitude of position (only valid if #sucess is \c true).
+    //! Longitude of position (only valid if #success is \c true).
     public final double longitude;
     //! Flag that indicates if the position is valid.
     public final boolean success;
@@ -85,22 +85,12 @@ public class Utils
     }
   }
   
-  /*! \brief converts an integer to a byte array (big endian).
+  /*! \brief writes an integer in big endian format to a stream.
    * 
-   *  \param value The value to convert.
-   *  \return A byte array in big endian format representing the original
-   *          value.
+   *  \param stream The stream the value is written to.
+   *  \param value The value that will be written to the stream.
+   *  \throws IOException
    * */
-  public static byte[] toBigEndianByteArray(int value)
-  {
-    byte[] data = new byte[4];
-    data[3] = (byte)((value >> 24) & 0xff);
-    data[2] = (byte)((value >> 16) & 0xff);
-    data[1] = (byte)((value >> 8 ) & 0xff);
-    data[0] = (byte)(value & 0xff);
-    return data;
-  }
-  
   public static void writeIntBigEndian(OutputStream stream, int value) throws IOException
   {
     stream.write((value >> 24) & 0xff);
@@ -109,6 +99,14 @@ public class Utils
     stream.write(value & 0xff);
   }
   
+  /*! \brief This method tries to retrieve the location by cell information.
+   * 
+   *  \param cellid Cell-id of gsm cell.
+   *  \param lac lac of gsm cell.
+   *  \return Returns an object (\ref LocationResult) that contains
+   *          all information about the request (whether the request 
+   *          has been successful + the position of the cell if possible).
+   * */
   public static LocationResult locateGsmCell(int cellid, int lac)
   {
     try
@@ -148,21 +146,47 @@ public class Utils
     return new LocationResult();
   }
   
+  /*! \brief Helper function to format response message.
+   * 
+   *  \param latitude The latitude.
+   *  \param longitude The longitude.
+   *  \param tag The name of the pin in maps.
+   *  \return Returns a String that can be sent as response.
+   * */
   public static String formatGeoData(String latitude, String longitude, String tag)
   {
     return String.format("geo:0,0?q=%s,%s (%s)", latitude, longitude, tag);
   }
   
+  /*! \brief Helper function to format response message.
+   * 
+   *  \param latitude The latitude.
+   *  \param longitude The longitude.
+   *  \param tag The name of the pin in maps.
+   *  \return Returns a String that can be sent as response.
+   * */
   public static String formatGeoData(double latitude, double longitude, String tag)
   {
     return formatGeoData(String.valueOf(latitude), String.valueOf(longitude), tag);
   }
   
+  /*! \brief Formats the telephone number.
+   * 
+   *  \todo Should format the telephone number to an international format.
+   * 
+   *  \param number The telephone number to format.
+   *  \return A normalized telephone number.
+   * */
   public static String formatTelephoneNumber(String number)
   {
     return PhoneNumberUtils.stripSeparators(number);
   }
   
+  /*! \brief Sends an sms.
+   * 
+   *  \param number The telephone number the message will be sent to.
+   *  \param message The message that will be sent.
+   * */
   public static void sendSMS(String number, String message)
   {
     SmsManager man = SmsManager.getDefault();
@@ -170,11 +194,27 @@ public class Utils
     Log.d(TAG, String.format("SEND SMS (number=%s): '%s'", number, message));
   }
   
+  /*! \brief Sends the locate command \ref MsgReceiver.LOCO_CMD_LOCATE.
+   * 
+   *  \param number The telephone number the message will be sent to.
+   * 
+   *  \see sendSMS which is used to send the sms.
+   * */
   public static void sendLocateSMS(String number)
   {
     Utils.sendSMS(number, MsgReceiver.LOCO_CMD_LOCATE);
   }
   
+  /*! \brief This method tries to get the line-1 number.
+   * 
+   *  \param context A context of this application (Necessary to get
+   *         an instance of \c TelephonyManager.
+   *  \return A formatted version of the line-1 number or null if not
+   *          available.
+   * 
+   *  \see formatTelephoneNumber which is used to format the telephone
+   *       number.
+   * */
   public static String getLine1Number(Context context)
   {
     TelephonyManager tel_man = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
