@@ -25,15 +25,33 @@ import android.widget.Toast;
 import android.util.Log;
 import android.widget.Toast;
 
+
+/*! \brief This Activity is used to directly enter contact details.
+ * 
+ *  I added this Activity because \ref FixNumberActivity maybe doesn't 
+ *  let you enter a perfectly valid number... 
+ * */
 public class DirectAddActivity extends Activity
 {
+  //! TAG to identify log messages from this class.
   protected static final String TAG = "loco.DirectAddActivity";
   
+  //! Database object used to add a person to the database.
   protected StalkerDatabase m_db;
-  
+  //! Reference to the EditText control to enter the name of the contact.
   protected EditText m_txt_name;
+  //! Reference to the EditText control to enter the telephone number of the contact. 
   protected EditText m_txt_number;
   
+  
+  /*! \brief Callback method (Activity), called if a instance
+   *         of this activity has been created.
+   * 
+   *  Sets up references to controls and database connection.
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
+   * */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -46,11 +64,20 @@ public class DirectAddActivity extends Activity
     m_db = new StalkerDatabase(getApplicationContext());
   }
   
+  /*! Callback method, called if cancel button has been pressed.
+   * 
+   *  \param v The view that has been pressed.
+   * */
   public void onCancel(View v)
   {
     finish();
   }
   
+  /*! \brief Helper method to check if String is null or empty \c "".
+   * 
+   *  \param value String to test.
+   *  \return \c true if \c value is null or empty, else \c false.
+   * */
   private static boolean isNullOrEmpty(String value)
   {
     if (value != null)
@@ -63,6 +90,18 @@ public class DirectAddActivity extends Activity
     }
   }
   
+  /*! Callback method, called if the save button has been pressed.
+   * 
+   *  This method really tries to add a contact to the database.
+   * 
+   *  \note Note that it can fail to add a person to the database
+   *        For example: it's not possible to have 2 contacts with same
+   *        telephone number (which doesn't make sense anyway)!
+   * 
+   *  \param v The view that has been pressed.
+   * 
+   *  \see StalkerDatabase.addPerson for more information.
+   * */
   public void onSave(View v)
   {
     String number = m_txt_number.getText().toString();
@@ -88,6 +127,11 @@ public class DirectAddActivity extends Activity
     }
   }
   
+  /*! \brief Callback method (Activity), called if Activity is about to
+   *         beeing destroyed.
+   * 
+   *  Closes the database connection.
+   * */
   @Override
   public void onDestroy()
   {
