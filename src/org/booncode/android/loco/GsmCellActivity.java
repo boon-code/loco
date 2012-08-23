@@ -82,6 +82,8 @@ public class GsmCellActivity extends Activity
   
   /*! \brief Helper method to read raw gsm data.
    * 
+   *  Shows raw gsm data in #m_txt_data (if raw data could be read).
+   * 
    *  \return \c true if raw data could be read, else \c false.
    * */
   private boolean readData()
