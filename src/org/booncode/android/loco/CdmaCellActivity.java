@@ -22,16 +22,32 @@ import android.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.Toast;
 
+
+//! Activity that is used to show cell information (cdma)
 public class CdmaCellActivity extends Activity
 {
+  //! Intent extra key for raw cdma data (String[]).
   public static final String EXTRA_KEY_CDMA_DATA = "cdma";
+  //! Intent extra key for the telephone number of the tracked person.
   public static final String EXTRA_SHOW_NUMBER = "number";
+  //! Intent extra key for the name of the tracked person.
   public static final String EXTRA_SHOW_NAME = "name";
   
+  //! TAG to identify log messages from this class.
   protected static final String TAG = "loco.CdmaCellActivity";
   
+  //! Shows raw cdma data that has been received.
   protected TextView m_txt_data;
   
+  
+  /*! \brief Callback method (Activity), called if a instance
+   *         of this activity has been created.
+   * 
+   *  Sets up a reference to the raw data view (#m_txt_data).
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
+   * */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -41,6 +57,12 @@ public class CdmaCellActivity extends Activity
     m_txt_data = (TextView)findViewById(R.id.cdma_txt_data);
   }
   
+  /*! \brief Helper method to read raw cdma data.
+   * 
+   *  Shows raw cdma data in #m_txt_data (if raw data could be read).
+   * 
+   *  \return \c true if raw data could be read, else \c false.
+   * */
   private boolean readData()
   {
     Intent intent = getIntent();
@@ -82,6 +104,11 @@ public class CdmaCellActivity extends Activity
     return true;
   }
   
+  /*! \brief Callback method (Activity), called if activity has been
+   *         started.
+   * 
+   *  Tries to read raw cdma-data.
+   * */
   @Override
   public void onStart()
   {
@@ -91,18 +118,6 @@ public class CdmaCellActivity extends Activity
     {
       m_txt_data.setText("Couldn't retrieve data from intent");
     }
-  }
-  
-  @Override
-  public void onStop()
-  {
-    super.onStop();
-  }
-  
-  @Override
-  public void onDestroy()
-  {
-    super.onDestroy();
   }
   
 }
