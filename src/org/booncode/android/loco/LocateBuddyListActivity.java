@@ -22,15 +22,31 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+/*! \brief Activity that shows a list of all contacts that can be located.
+ * 
+ *  This Activity just shows all contacts that have been added and can
+ *  be located. If the user clicks on the contact, he/she will be located.
+ * */
 public class LocateBuddyListActivity extends ListActivity
 {
+  //! TAG to identify log messages from this class.
   protected static final String TAG = "loco.LocateBuddyListActivity";
-  protected static final int REQUEST_CONTACT = 1;
   
+  //! Adapter used to show #m_cursor
   protected SimpleCursorAdapter m_adapter;
+  //! Database of all persons that can be located.
   protected StalkerDatabase m_db;
+  //! Current cursor of all persons (from #m_db).
   protected Cursor m_cursor = null;
   
+  /*! \brief Callback method (Activity), called if a instance
+   *         of this activity has been created.
+   * 
+   *  Database object is created and adapter is created.
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
+   * */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -49,6 +65,16 @@ public class LocateBuddyListActivity extends ListActivity
     setListAdapter(m_adapter);
   }
   
+  /*! \brief Callback method (ListActivity), called if a contact has been
+   *         clicked.
+   * 
+   *  \param listview The ListView that has been clicked.
+   *  \param view The Item that has been clicked.
+   *  \param position The position in the ListView of the clicked icon.
+   *  \param id The \c _id of the clicked item (\c rowid of \ref StalkerDatabase
+   *         is set to \c _id, therefore it can be used to retrieve
+   *         the clicked person through \ref StalkerDatabase.getPersonFromId).
+   * */
   @Override
   protected void onListItemClick(ListView listview, View view, int position, long id)
   {
@@ -79,6 +105,7 @@ public class LocateBuddyListActivity extends ListActivity
     }
   }
   
+  //! Helper method to release the current cursor.
   protected void releaseList()
   {
     Log.d(TAG, "Close cursor");
@@ -89,6 +116,7 @@ public class LocateBuddyListActivity extends ListActivity
     }
   }
   
+  //! Helper method to load an up-to-date cursor and set adapter.
   protected void reloadList()
   {
     Cursor c = m_db.queryAllPersons();
@@ -98,6 +126,7 @@ public class LocateBuddyListActivity extends ListActivity
     Log.d(TAG, "Create cursor");
   }
   
+  //! Callback method (Activity), called if Activity is about to close.
   @Override
   public void onStop()
   {
@@ -105,6 +134,7 @@ public class LocateBuddyListActivity extends ListActivity
     super.onStop();
   }
   
+  //! Callback method (Activity), called if Activity has been started.
   @Override
   public void onStart()
   {
@@ -112,6 +142,7 @@ public class LocateBuddyListActivity extends ListActivity
     reloadList();
   }
   
+  //! Callback method (Activity), called if Activity is destroyed.
   @Override
   public void onDestroy()
   {
