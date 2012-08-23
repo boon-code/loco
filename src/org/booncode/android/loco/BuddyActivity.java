@@ -22,20 +22,40 @@ import android.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.Toast;
 
+
+/*! \brief This Activity presents information about one contact in the
+ *         \ref StalkerDatabase.
+ * */
 public class BuddyActivity extends Activity
 {
+  //! Intent extra key of the number of the person whos info will be shown.
   public static final String SHOW_NUMBER = "number";
   
+  //! TAG to identify log messages from this class.
   protected static final String TAG = "loco.BuddyActivity";
   
+  //! Database to retrieve information about the person (and change certain settings).
   protected StalkerDatabase m_db;
+  //! Extracted number of the person that is currently shown.
   protected String m_number;
-  
+  //! Reference to the TextView that contains the name of the person.
   protected TextView m_txt_name;
+  //! Reference to the TextView that contains the number of the person.
   protected TextView m_txt_number;
+  //! Reference to the TextView that contains the number of sms this person caused.
   protected TextView m_txt_smscount;
+  //! Reference to the CheckBox that indicates whether the person is authorised to cause sms to be sent.
   protected CheckBox m_chk_auth;
   
+  
+  /*! \brief Callback method (Activity), called if a instance
+   *         of this activity has been created.
+   * 
+   *  Database object is created references to controls are set up.
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
+   * */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -50,6 +70,13 @@ public class BuddyActivity extends Activity
     m_db = new StalkerDatabase(getApplicationContext());
   }
   
+  /*! \brief Helper method that extracts information from Intent extras.
+   * 
+   *  Extracts number from intent and queries all information of this 
+   *  person by using #m_db.
+   * 
+   *  \return Returns \c true if data could be extracted, else \c false.
+   * */
   protected boolean extractData()
   {
     Bundle bundle = getIntent().getExtras();
@@ -82,6 +109,11 @@ public class BuddyActivity extends Activity
     return false;
   }
   
+  /*! \brief Callback method, called if #m_chk_auth CheckBox has been 
+   *         clicked.
+   * 
+   *  \param v The view that has been clicked.
+   * */
   public void onAuthorisationChanged(View v)
   {
     if (v.getId() == R.id.buddy_chk_auth)
@@ -94,6 +126,11 @@ public class BuddyActivity extends Activity
     }
   }
   
+  /*! \brief Callback method (Activity), called if menu has to be created.
+   * 
+   *  \param menu The Menu that has to be created.
+   *  \return \c true if menu has been created.
+   * */
   @Override
   public boolean onCreateOptionsMenu(Menu menu)
   {
@@ -102,6 +139,12 @@ public class BuddyActivity extends Activity
     return true;
   }
   
+  /*! \brief Callback method (Activity), called if user pressed a menu
+   *         item
+   * 
+   *  \param item The item that has been pressed.
+   *  \return \c true means that the event has been handled.
+   * */
   @Override
   public boolean onOptionsItemSelected(MenuItem item)
   {
@@ -126,6 +169,11 @@ public class BuddyActivity extends Activity
     }
   }
   
+  /*! \brief Callback method (Activity), called if Activity got started.
+   * 
+   *  If #extractData return \c false, the Activity will be closed
+   *  immediately.
+   * */
   @Override
   public void onStart()
   {
@@ -136,17 +184,11 @@ public class BuddyActivity extends Activity
     }
   }
   
-  @Override
-  public void onStop()
-  {
-    super.onStop();
-  }
-  
+  //! Callback method (Activity), called if Activity is destroyed.
   @Override
   public void onDestroy()
   {
     m_db.close();
     super.onDestroy();
   }
-  
 }
