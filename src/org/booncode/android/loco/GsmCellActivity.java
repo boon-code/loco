@@ -23,23 +23,48 @@ import android.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.Toast;
 
+
+/*! \brief Activity that is used to show cell information
+ * 
+ *  Added buttons to retrieve the position (if possible) and 
+ *  open maps.
+ * */
 public class GsmCellActivity extends Activity
 {
+  //! Intent extra key for gsm data (String[]).
   public static final String EXTRA_KEY_GSM_DATA = "gsm";
+  //! Intent extra key for the telephone number of the tracked person.
   public static final String EXTRA_SHOW_NUMBER = "number";
+  //! Intent extra key for the name of the tracked person.
   public static final String EXTRA_SHOW_NAME = "name";
   
+  //! TAG to identify log messages from this class.
   protected static final String TAG = "loco.GsmCellActivity";
   
+  //! Shows raw gsm data that has been received.
   protected TextView m_txt_data;
+  //! Shows the response message of maps.
   protected TextView m_txt_browser;
+  //! Reference to button to open maps.
   protected Button   m_btn_maps;
+  //! Reference to button to query server.
   protected Button   m_btn_findpos;
-  
+  //! Current cell-ID
   protected int m_cellid = 0;
+  //! Current lac.
   protected int m_lac = 0;
+  //! Last location result.
   protected Utils.LocationResult m_result = new Utils.LocationResult();
   
+  
+  /*! \brief Callback method (Activity), called if a instance
+   *         of this activity has been created.
+   * 
+   *  Sets up references to controls.
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
+   * */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -55,6 +80,10 @@ public class GsmCellActivity extends Activity
     m_btn_findpos.setEnabled(false);
   }
   
+  /*! \brief Helper method to read raw gsm data.
+   * 
+   *  \return \c true if raw data could be read, else \c false.
+   * */
   private boolean readData()
   {
     Intent intent = getIntent();
@@ -105,6 +134,11 @@ public class GsmCellActivity extends Activity
     return true;
   }
   
+  /*! \brief Callback method (Activity), called if activity has been
+   *         started.
+   * 
+   *  Tries to read raw gsm-data and enables/disables buttons accordingly.
+   * */
   @Override
   public void onStart()
   {
@@ -119,6 +153,15 @@ public class GsmCellActivity extends Activity
     }
   }
   
+  /*! \brief Callback method, called if #m_btn_findpos has been pressed.
+   * 
+   *  Tries to find the position of the gsm cell by asking a server.
+   *  
+   *  \param v The View that has been pressed.
+   * 
+   *  \see Utils.locateGsmCell for details on retrieving the location
+   *       of the gsm-cell.
+   * */
   public void onFindPositionClicked(View v)
   {
     m_result = Utils.locateGsmCell(m_cellid, m_lac);
@@ -133,6 +176,12 @@ public class GsmCellActivity extends Activity
     }
   }
   
+  /*! \brief Callback method, called if #m_btn_maps has been pressed.
+   * 
+   *  Tries to open maps and show the position of the gsm-cell.
+   * 
+   *  \param v The View that has been pressed.
+   * */
   public void onShowMaps(View v)
   {
     if (m_result.success)
@@ -141,18 +190,6 @@ public class GsmCellActivity extends Activity
       Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
       startActivity(intent);
     }
-  }
-  
-  @Override
-  public void onStop()
-  {
-    super.onStop();
-  }
-  
-  @Override
-  public void onDestroy()
-  {
-    super.onDestroy();
   }
   
 }
