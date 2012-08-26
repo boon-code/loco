@@ -1,0 +1,11 @@
+/*! \mainpage Loco - Anti Theft Software
+ *  \htmlonly
+    <p>
+    This project is about building a software that is trying to protect your android-phone
+    from beeing lost (stolen...). 
+    </p>
+    <p>
+    <img src="img/logo_stalker.png" />
+    </p>
+ *  \endhtmlonly
+ * */

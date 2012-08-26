@@ -4,6 +4,7 @@ TARGET_ARCH:="android-8"
 DOXYGEN:=doxygen
 DOCU_DIR:=doc
 DOXYGEN_SUBDIR:=doxygen
+DOCU_IMG:=img
 ANT:=ant
 ANDROID:=android
 ADB:=adb
@@ -15,7 +16,9 @@ ifdef USE_ANDROID_PATH
 endif
 
 
+DOCU_IMG_PATH:=$(DOCU_DIR)/$(DOCU_IMG)
 DOXY_DIR:=$(DOCU_DIR)/$(DOXYGEN_SUBDIR)
+DOXY_IMG:=$(DOXY_DIR)/html/$(DOCU_IMG)
 TARGET:=bin/$(NAME)-debug.apk
 
 all: build
@@ -43,9 +46,11 @@ git-clean: clean
 
 docu:
 	mkdir -p $(DOXY_DIR)
+	mkdir -p $(DOCU_IMG_PATH)
 	$(DOXYGEN)
+	cp -r $(DOCU_IMG_PATH) $(DOXY_IMG)
 
-clean:
+clean: build.xml
 	$(ANT) clean
 	rm -rf $(DOXY_DIR)
 
