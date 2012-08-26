@@ -7,32 +7,58 @@
   <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
   
   <application android:label="@string/prog_name"
-    android:icon="@drawable/prog_icon"
+    android:icon="@drawable/hut_stalker_icon"
     android:theme="@android:style/Theme.NoTitleBar">
     
-    <activity android:name=".MainActivity" android:screenOrientation="portrait"
+    <activity android:name=".MainActivity"
+      android:screenOrientation="portrait"
       android:launchMode="singleTop">
+      
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
     
-    <activity android:name=".BuddyListActivity" android:launchMode="singleTop" />
+    <activity android:name=".BuddyListActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".BuddyActivity" android:launchMode="singleTop" />
+    <activity android:name=".BuddyActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".LocateBuddyListActivity" android:launchMode="singleTop" />
+    <activity android:name=".LocateBuddyListActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".GsmCellActivity" android:launchMode="singleTop" />
+    <activity android:name=".GsmCellActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".CdmaCellActivity" android:launchMode="singleTop" />
+    <activity android:name=".CdmaCellActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".SettingsActivity" android:launchMode="singleTop" />
+    <activity android:name=".SettingsActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".FixNumberActivity" android:launchMode="singleTop" />
+    <activity android:name=".FixNumberActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
-    <activity android:name=".DirectAddActivity" android:launchMode="singleTop" />
+    <activity android:name=".DirectAddActivity"
+      android:screenOrientation="portrait"
+      android:launchMode="singleTop"
+    />
     
     <service android:name=".Stalker" />
     
