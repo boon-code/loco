@@ -83,13 +83,12 @@ public class GsmCellActivity extends Activity
   /*! \brief Helper method to read raw gsm data.
    * 
    *  Shows raw gsm data in #m_txt_data (if raw data could be read).
-   * 
+   *  
+   *  \param intent The intent to read data from.
    *  \return \c true if raw data could be read, else \c false.
    * */
-  private boolean readData()
+  private boolean readData(Intent intent)
   {
-    Intent intent = getIntent();
-    
     if (intent == null)
     {
       Log.e(TAG, "readData: got null intent...");
@@ -136,23 +135,64 @@ public class GsmCellActivity extends Activity
     return true;
   }
   
-  /*! \brief Callback method (Activity), called if activity has been
-   *         started.
+  /*! Helper method that loads cell-information from intent.
    * 
-   *  Tries to read raw gsm-data and enables/disables buttons accordingly.
+   *  Trys to load cell information from intent and
+   *  shows an error message if no valid data has been found in
+   *  \c Intent object.
+   * 
+   *  \param intent The intent to load data from.
    * */
-  @Override
-  public void onStart()
+  protected void loadCellData(Intent intent)
   {
-    super.onStart();
-    
-    boolean success = readData();
+    boolean success = readData(intent);
     m_btn_findpos.setEnabled(success);
     
     if (!success)
     {
       m_txt_data.setText("Couldn't retrieve data from intent");
     }
+  }
+  
+  /*! \brief Callback method (Activity), called if activity has been
+   *         started.
+   * 
+   *  Loads cell information and sets view accordingly.
+   * */
+  @Override
+  public void onStart()
+  {
+    Log.d(TAG, "onStart");
+    super.onStart();
+    loadCellData(getIntent());
+  }
+  
+  /*! \brief Callback method (Activity), called if activity resumes.
+   * 
+   *  Loads cell information and sets view accordingly.
+   * */
+  @Override
+  public void onResume()
+  {
+    Log.d(TAG, "onResume");
+    super.onResume();
+    loadCellData(getIntent());
+  }
+  
+  /*! \brief Callback method (Activity), called if there is an instance
+   *         of this activity, but it has been started with a new
+   *         \c Intent.
+   * 
+   *  Loads cell information and sets view accordingly.
+   * 
+   *  \param intent New intent that has to be used by the activity.
+   * */
+  @Override
+  public void onNewIntent(Intent intent)
+  {
+    Log.d(TAG, "onNewIntent");
+    setIntent(intent);
+    super.onNewIntent(intent);
   }
   
   /*! \brief Callback method, called if #m_btn_findpos has been pressed.

@@ -657,9 +657,16 @@ public class Stalker extends Service implements LocationListener
   private void addPositionNotify(StalkerDatabase.Person person, String geodata)
   {
     final int icon = R.drawable.prog_icon;
+    int notify_id = increaseNotifyID();
     Uri uri = Uri.parse(geodata);
     Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-    PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
+    
+    /* TRICKY: notify_id will be used for the PendingIntent and the
+     *         Notification. Since the notification will be replaced 
+     *         (if a notification with same id is currently queued)
+     *         the pending intent should be replaced as well.
+     * */
+    PendingIntent pintent = PendingIntent.getActivity(this, notify_id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     Notification notify = new Notification(icon,
                                            String.format(POS_NOTIFY_TICKER, person.name),
                                            System.currentTimeMillis());
@@ -668,7 +675,7 @@ public class Stalker extends Service implements LocationListener
                               String.format(POS_NOTIFY_TEXT, person.name),
                               pintent);
     notify.flags = Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
-    m_notify_man.notify(increaseNotifyID(), notify);
+    m_notify_man.notify(notify_id, notify);
   }
   
   /*! \brief This method checks the supplied data (of command 
@@ -722,11 +729,19 @@ public class Stalker extends Service implements LocationListener
   private void addGsmCellNotify(StalkerDatabase.Person person, String[] info)
   {
     final int icon = R.drawable.prog_icon;
+    int notify_id = increaseNotifyID();
     Intent intent = new Intent(this, GsmCellActivity.class);
+    intent.setFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_SINGLE_TOP);
     intent.putExtra(GsmCellActivity.EXTRA_KEY_GSM_DATA, info);
     intent.putExtra(GsmCellActivity.EXTRA_SHOW_NAME, person.name);
     intent.putExtra(GsmCellActivity.EXTRA_SHOW_NUMBER, person.number);
-    PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
+    
+    /* TRICKY: notify_id will be used for the PendingIntent and the
+     *         Notification. Since the notification will be replaced 
+     *         (if a notification with same id is currently queued)
+     *         the pending intent should be replaced as well.
+     * */
+    PendingIntent pintent = PendingIntent.getActivity(this, notify_id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     Notification notify = new Notification(icon,
                                            String.format(CELL_NOTIFY_TICKER, person.name),
                                            System.currentTimeMillis());
@@ -735,7 +750,7 @@ public class Stalker extends Service implements LocationListener
                               String.format(CELL_NOTIFY_TEXT, person.name),
                               pintent);
     notify.flags = Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
-    m_notify_man.notify(increaseNotifyID(), notify);
+    m_notify_man.notify(notify_id, notify);
   }
   
   /*! \brief Adds a notification which opens up an activity that shows
@@ -748,11 +763,19 @@ public class Stalker extends Service implements LocationListener
   private void addCdmaCellNotify(StalkerDatabase.Person person, String[] info)
   {
     final int icon = R.drawable.prog_icon;
+    int notify_id = increaseNotifyID();
     Intent intent = new Intent(this, CdmaCellActivity.class);
+    intent.setFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_SINGLE_TOP);
     intent.putExtra(CdmaCellActivity.EXTRA_KEY_CDMA_DATA, info);
     intent.putExtra(CdmaCellActivity.EXTRA_SHOW_NAME, person.name);
     intent.putExtra(CdmaCellActivity.EXTRA_SHOW_NUMBER, person.number);
-    PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
+    
+    /* TRICKY: notify_id will be used for the PendingIntent and the
+     *         Notification. Since the notification will be replaced 
+     *         (if a notification with same id is currently queued)
+     *         the pending intent should be replaced as well.
+     * */
+    PendingIntent pintent = PendingIntent.getActivity(this, notify_id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     Notification notify = new Notification(icon,
                                            String.format(CELL_NOTIFY_TICKER, person.name),
                                            System.currentTimeMillis());
@@ -761,7 +784,7 @@ public class Stalker extends Service implements LocationListener
                               String.format(CELL_NOTIFY_TEXT, person.name),
                               pintent);
     notify.flags = Notification.FLAG_SHOW_LIGHTS | Notification.FLAG_AUTO_CANCEL;
-    m_notify_man.notify(increaseNotifyID(), notify);
+    m_notify_man.notify(notify_id, notify);
   }
   
   /*! \brief This method checks the supplied data (of command 
@@ -792,12 +815,14 @@ public class Stalker extends Service implements LocationListener
           MatchResult result = match_gsm.toMatchResult();
           addGsmCellNotify(person, new String[]{result.group(1), result.group(2),
               result.group(3), result.group(4)});
+          Log.v(TAG, "notifyCell: gsm: " + msg);
         }
         else if(match_cdma.matches())
         {
           MatchResult result = match_cdma.toMatchResult();
           addCdmaCellNotify(person, new String[]{result.group(1), result.group(2),
               result.group(3), result.group(4), result.group(5)});
+          Log.v(TAG, "notifyCell: cdma: " + msg);
         }
         else
         {
