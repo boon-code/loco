@@ -2,7 +2,10 @@
 *LOCO* - anti theft software
 ============================
 
+.. _here : http://boon-code.github.com/loco/
+
 *LOCO* is an anti theft software for android.
+Documentation can be found here_.
 
 LICENSE:
 --------
