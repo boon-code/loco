@@ -94,7 +94,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <p>BroadcastReceiver that gets called if a sms has been received. </p>
 <p>This class has to be registered in the AndroidManifest and has to be given a proper priority to ensure that it's the first class that gets notified about a newly received sms. Since receiving an sms is an ordered broadcast, the BroadcastReceiver with the highest priority can decide whether the notification will pass to the next Receiver or not. </p>
 
-<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00020">20</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
+<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00038">38</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="aacf3dc29cb890375ce71b86684d0b438"></a><!-- doxytag: member="org::booncode::android::loco::MsgReceiver::inspectIntent" ref="aacf3dc29cb890375ce71b86684d0b438" args="(Intent intent)" -->
 <div class="memitem">
@@ -123,7 +123,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <dl class="return"><dt><b>Returns:</b></dt><dd><code>true</code> if this message should be filtered, else <code>false</code>.</dd></dl>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1MsgReceiver.html#a500ff1443a73218f967e2c4cb5b8a7d8" title="This method extracts the actual message and checks if it&#39;s a command.">scanPDU</a> for further information about the detection of commands. </dd></dl>
 
-<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00126">126</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
+<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00144">144</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
 
 </div>
 </div>
@@ -163,7 +163,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 </dl>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1MsgReceiver.html#aacf3dc29cb890375ce71b86684d0b438" title="Inspects the intent that has been received by this class.">inspectIntent</a> which checks the message. </dd></dl>
 
-<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00213">213</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
+<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00231">231</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
 
 </div>
 </div>
@@ -195,7 +195,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <dl class="return"><dt><b>Returns:</b></dt><dd><code>true</code> if this message should be filtered, else <code>false</code>. If <a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1MsgReceiver.html#a9e05481110ef1f70520a48abe55065b5">startStalker</a> fails, the message will not be filtered (because it's likely that it's not a real command from this application...)</dd></dl>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1MsgReceiver.html#a9e05481110ef1f70520a48abe55065b5">startStalker</a> starts the <a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1Stalker.html">Stalker</a> service if command is valid. </dd></dl>
 
-<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00057">57</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
+<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00075">75</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
 
 </div>
 </div>
@@ -225,7 +225,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <dl class="return"><dt><b>Returns:</b></dt><dd><code>true</code> if this message should be filtered, else <code>false</code>.</dd></dl>
 <dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1MsgReceiver.html#a78652e5d45bb734c8dde9b3e73e6ee12" title="This method really checks the actual message.">processMessage</a> for further information on the detection of commands. </dd></dl>
 
-<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00099">99</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
+<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00117">117</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
 
 </div>
 </div>
@@ -263,7 +263,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd><code>true</code> if <a class="el" href="classorg_1_1booncode_1_1android_1_1loco_1_1Stalker.html">Stalker</a> service has been started, <code>false</code> if an illegal command has been passed and the service has therefore not been started. </dd></dl>
 
-<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00166">166</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
+<p>Definition at line <a class="el" href="MsgReceiver_8java_source.html#l00184">184</a> of file <a class="el" href="MsgReceiver_8java_source.html">MsgReceiver.java</a>.</p>
 
 </div>
 </div>
@@ -285,7 +285,7 @@ Context&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sat Sep 1 00:51:47 2012 for loco by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Tue Oct 23 20:10:38 2012 for loco by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

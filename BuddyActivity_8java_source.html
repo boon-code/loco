@@ -41,152 +41,170 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="files.html"><span>File&nbsp;List</span></a></li>
     </ul>
   </div>
-<h1>src/org/booncode/android/loco/BuddyActivity.java</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="keyword">package </span>org.booncode.android.loco;
-<a name="l00002"></a>00002 
-<a name="l00003"></a>00003 <span class="keyword">import</span> android.app.Activity;
-<a name="l00004"></a>00004 <span class="keyword">import</span> android.app.AlertDialog;
-<a name="l00005"></a>00005 <span class="keyword">import</span> android.content.DialogInterface;
-<a name="l00006"></a>00006 <span class="keyword">import</span> android.content.Intent;
-<a name="l00007"></a>00007 <span class="keyword">import</span> android.content.Context;
-<a name="l00008"></a>00008 <span class="keyword">import</span> android.database.Cursor;
-<a name="l00009"></a>00009 <span class="keyword">import</span> android.view.View;
-<a name="l00010"></a>00010 <span class="keyword">import</span> android.view.Menu;
-<a name="l00011"></a>00011 <span class="keyword">import</span> android.view.MenuItem;
-<a name="l00012"></a>00012 <span class="keyword">import</span> android.view.MenuInflater;
-<a name="l00013"></a>00013 <span class="keyword">import</span> android.net.Uri;
-<a name="l00014"></a>00014 <span class="keyword">import</span> android.widget.Toast;
-<a name="l00015"></a>00015 <span class="keyword">import</span> android.os.Bundle;
-<a name="l00016"></a>00016 <span class="keyword">import</span> android.widget.ListAdapter;
-<a name="l00017"></a>00017 <span class="keyword">import</span> android.widget.ListView;
-<a name="l00018"></a>00018 <span class="keyword">import</span> android.widget.TextView;
-<a name="l00019"></a>00019 <span class="keyword">import</span> android.widget.CheckBox;
-<a name="l00020"></a>00020 <span class="keyword">import</span> android.widget.SimpleCursorAdapter;
-<a name="l00021"></a>00021 
-<a name="l00022"></a>00022 <span class="keyword">import</span> android.util.Log;
-<a name="l00023"></a>00023 <span class="keyword">import</span> android.widget.Toast;
-<a name="l00024"></a>00024 
-<a name="l00025"></a>00025 
-<a name="l00029"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html">00029</a> <span class="keyword">public</span> <span class="keyword">class </span><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html" title="This Activity presents information about one contact in the StalkerDatabase.">BuddyActivity</a> <span class="keyword">extends</span> Activity
-<a name="l00030"></a>00030 {
-<a name="l00032"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82">00032</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82" title="Intent extra key of the number of the person whos info will be shown.">SHOW_NUMBER</a> = <span class="stringliteral">&quot;number&quot;</span>;
-<a name="l00033"></a>00033   
-<a name="l00035"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a">00035</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG to identify log messages from this class.">TAG</a> = <span class="stringliteral">&quot;loco.BuddyActivity&quot;</span>;
-<a name="l00036"></a>00036   
-<a name="l00038"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b">00038</a>   <span class="keyword">protected</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>;
-<a name="l00040"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72">00040</a>   <span class="keyword">protected</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>;
-<a name="l00042"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1">00042</a>   <span class="keyword">protected</span> TextView <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1" title="Reference to the TextView that contains the name of the person.">m_txt_name</a>;
-<a name="l00044"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40">00044</a>   <span class="keyword">protected</span> TextView <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40" title="Reference to the TextView that contains the number of the person.">m_txt_number</a>;
-<a name="l00046"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a">00046</a>   <span class="keyword">protected</span> TextView <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a" title="Reference to the TextView that contains the number of sms this person caused.">m_txt_smscount</a>;
-<a name="l00048"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961">00048</a>   <span class="keyword">protected</span> CheckBox <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961" title="Reference to the CheckBox that indicates whether the person is authorised to cause...">m_chk_auth</a>;
-<a name="l00049"></a>00049   
-<a name="l00050"></a>00050   
-<a name="l00059"></a>00059   @Override
-<a name="l00060"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a85e87cb5ced88dff7c8173ecc4f636d1">00060</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a85e87cb5ced88dff7c8173ecc4f636d1" title="Callback method (Activity), called if a instance of this activity has been created...">onCreate</a>(Bundle savedInstanceState)
-<a name="l00061"></a>00061   {
-<a name="l00062"></a>00062     super.onCreate(savedInstanceState);
-<a name="l00063"></a>00063     this.setContentView(R.layout.buddy_layout);
-<a name="l00064"></a>00064     
-<a name="l00065"></a>00065     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1" title="Reference to the TextView that contains the name of the person.">m_txt_name</a> = (TextView)findViewById(R.id.buddy_txt_name);
-<a name="l00066"></a>00066     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40" title="Reference to the TextView that contains the number of the person.">m_txt_number</a> = (TextView)findViewById(R.id.buddy_txt_number);
-<a name="l00067"></a>00067     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a" title="Reference to the TextView that contains the number of sms this person caused.">m_txt_smscount</a> = (TextView)findViewById(R.id.buddy_txt_smscount);
-<a name="l00068"></a>00068     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961" title="Reference to the CheckBox that indicates whether the person is authorised to cause...">m_chk_auth</a> = (CheckBox)findViewById(R.id.buddy_chk_auth);
-<a name="l00069"></a>00069     
-<a name="l00070"></a>00070     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a> = <span class="keyword">new</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>(getApplicationContext());
-<a name="l00071"></a>00071   }
-<a name="l00072"></a>00072   
-<a name="l00080"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a19c18372250dc1c86e6272062f03c570">00080</a>   <span class="keyword">protected</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a19c18372250dc1c86e6272062f03c570" title="Helper method that extracts information from Intent extras.">extractData</a>()
-<a name="l00081"></a>00081   {
-<a name="l00082"></a>00082     Bundle bundle = getIntent().getExtras();
-<a name="l00083"></a>00083     <span class="keywordflow">if</span> (bundle != null)
-<a name="l00084"></a>00084     {
-<a name="l00085"></a>00085       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a> = bundle.getString(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82" title="Intent extra key of the number of the person whos info will be shown.">SHOW_NUMBER</a>);
-<a name="l00086"></a>00086       
-<a name="l00087"></a>00087       <span class="keywordflow">if</span> (<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a> != null)
-<a name="l00088"></a>00088       {
-<a name="l00089"></a>00089         <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>.Person person = <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a65685154282aef223f4f7bf4b3177993" title="Retrieves a person from the database.">getPersonFromNumber</a>(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>);
-<a name="l00090"></a>00090         <span class="keywordflow">if</span> (person != null)
-<a name="l00091"></a>00091         {
-<a name="l00092"></a>00092           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1" title="Reference to the TextView that contains the name of the person.">m_txt_name</a>.setText(person.name);
-<a name="l00093"></a>00093           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40" title="Reference to the TextView that contains the number of the person.">m_txt_number</a>.setText(person.number);
-<a name="l00094"></a>00094           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a" title="Reference to the TextView that contains the number of sms this person caused.">m_txt_smscount</a>.setText(String.valueOf(person.smscount));
-<a name="l00095"></a>00095           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961" title="Reference to the CheckBox that indicates whether the person is authorised to cause...">m_chk_auth</a>.setChecked(person.authorised);
-<a name="l00096"></a>00096           <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00097"></a>00097         }
-<a name="l00098"></a>00098         <span class="keywordflow">else</span>
-<a name="l00099"></a>00099         {
-<a name="l00100"></a>00100           Log.w(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Couldn&#39;t find person with number %s&quot;</span>, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>));
-<a name="l00101"></a>00101         }
-<a name="l00102"></a>00102       }
-<a name="l00103"></a>00103       <span class="keywordflow">else</span>
-<a name="l00104"></a>00104       {
-<a name="l00105"></a>00105         Log.w(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG to identify log messages from this class.">TAG</a>, <span class="stringliteral">&quot;Intent has no extra-key &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82" title="Intent extra key of the number of the person whos info will be shown.">SHOW_NUMBER</a>);
-<a name="l00106"></a>00106       }
-<a name="l00107"></a>00107     }
-<a name="l00108"></a>00108     
-<a name="l00109"></a>00109     <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00110"></a>00110   }
-<a name="l00111"></a>00111   
-<a name="l00117"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11b7cdeb39e10e105476cc9f62466695">00117</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11b7cdeb39e10e105476cc9f62466695" title="Callback method, called if m_chk_auth CheckBox has been clicked.">onAuthorisationChanged</a>(View v)
-<a name="l00118"></a>00118   {
-<a name="l00119"></a>00119     <span class="keywordflow">if</span> (v.getId() == R.id.buddy_chk_auth)
-<a name="l00120"></a>00120     {
-<a name="l00121"></a>00121       CheckBox cbox = (CheckBox)v;
-<a name="l00122"></a>00122       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>.Person person = <span class="keyword">new</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>.Person();
-<a name="l00123"></a>00123       person.number = <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>;
-<a name="l00124"></a>00124       person.authorised = cbox.isChecked();
-<a name="l00125"></a>00125       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a609bef5ef4b740a5473bc45e6f2de8a7" title="Updates some properties of a person.">updatePerson</a>(person, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>);
-<a name="l00126"></a>00126     }
-<a name="l00127"></a>00127   }
-<a name="l00128"></a>00128   
-<a name="l00134"></a>00134   @Override
-<a name="l00135"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8f7d87763ddaf085205a54e8477ecfce">00135</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8f7d87763ddaf085205a54e8477ecfce" title="Callback method (Activity), called if menu has to be created.">onCreateOptionsMenu</a>(Menu menu)
+<h1>src/org/booncode/android/loco/BuddyActivity.java</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/* *******************************************************************************</span>
+<a name="l00002"></a>00002 <span class="comment"> * LOCO - Localizes the position of you mobile.</span>
+<a name="l00003"></a>00003 <span class="comment"> * Copyright (C) 2012  Manuel Huber</span>
+<a name="l00004"></a>00004 <span class="comment"> * </span>
+<a name="l00005"></a>00005 <span class="comment"> * This program is free software; you can redistribute it and/or</span>
+<a name="l00006"></a>00006 <span class="comment"> * modify it under the terms of the GNU General Public License</span>
+<a name="l00007"></a>00007 <span class="comment"> * as published by the Free Software Foundation; either version 2</span>
+<a name="l00008"></a>00008 <span class="comment"> * of the License, or (at your option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * </span>
+<a name="l00010"></a>00010 <span class="comment"> * This program is distributed in the hope that it will be useful,</span>
+<a name="l00011"></a>00011 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<a name="l00012"></a>00012 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<a name="l00013"></a>00013 <span class="comment"> * GNU General Public License for more details.</span>
+<a name="l00014"></a>00014 <span class="comment"> * </span>
+<a name="l00015"></a>00015 <span class="comment"> * You should have received a copy of the GNU General Public License</span>
+<a name="l00016"></a>00016 <span class="comment"> * along with this program; if not, write to the Free Software</span>
+<a name="l00017"></a>00017 <span class="comment"> * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.</span>
+<a name="l00018"></a>00018 <span class="comment"> * *******************************************************************************/</span>
+<a name="l00019"></a>00019 <span class="keyword">package </span>org.booncode.android.loco;
+<a name="l00020"></a>00020 
+<a name="l00021"></a>00021 <span class="keyword">import</span> android.app.Activity;
+<a name="l00022"></a>00022 <span class="keyword">import</span> android.app.AlertDialog;
+<a name="l00023"></a>00023 <span class="keyword">import</span> android.content.DialogInterface;
+<a name="l00024"></a>00024 <span class="keyword">import</span> android.content.Intent;
+<a name="l00025"></a>00025 <span class="keyword">import</span> android.content.Context;
+<a name="l00026"></a>00026 <span class="keyword">import</span> android.database.Cursor;
+<a name="l00027"></a>00027 <span class="keyword">import</span> android.view.View;
+<a name="l00028"></a>00028 <span class="keyword">import</span> android.view.Menu;
+<a name="l00029"></a>00029 <span class="keyword">import</span> android.view.MenuItem;
+<a name="l00030"></a>00030 <span class="keyword">import</span> android.view.MenuInflater;
+<a name="l00031"></a>00031 <span class="keyword">import</span> android.net.Uri;
+<a name="l00032"></a>00032 <span class="keyword">import</span> android.widget.Toast;
+<a name="l00033"></a>00033 <span class="keyword">import</span> android.os.Bundle;
+<a name="l00034"></a>00034 <span class="keyword">import</span> android.widget.ListAdapter;
+<a name="l00035"></a>00035 <span class="keyword">import</span> android.widget.ListView;
+<a name="l00036"></a>00036 <span class="keyword">import</span> android.widget.TextView;
+<a name="l00037"></a>00037 <span class="keyword">import</span> android.widget.CheckBox;
+<a name="l00038"></a>00038 <span class="keyword">import</span> android.widget.SimpleCursorAdapter;
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 <span class="keyword">import</span> android.util.Log;
+<a name="l00041"></a>00041 <span class="keyword">import</span> android.widget.Toast;
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 
+<a name="l00047"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html">00047</a> <span class="keyword">public</span> <span class="keyword">class </span><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html" title="This Activity presents information about one contact in the StalkerDatabase.">BuddyActivity</a> <span class="keyword">extends</span> Activity
+<a name="l00048"></a>00048 {
+<a name="l00050"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82">00050</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82" title="Intent extra key of the number of the person whos info will be shown.">SHOW_NUMBER</a> = <span class="stringliteral">&quot;number&quot;</span>;
+<a name="l00051"></a>00051   
+<a name="l00053"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a">00053</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG to identify log messages from this class.">TAG</a> = <span class="stringliteral">&quot;loco.BuddyActivity&quot;</span>;
+<a name="l00054"></a>00054   
+<a name="l00056"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b">00056</a>   <span class="keyword">protected</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>;
+<a name="l00058"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72">00058</a>   <span class="keyword">protected</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>;
+<a name="l00060"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1">00060</a>   <span class="keyword">protected</span> TextView <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1" title="Reference to the TextView that contains the name of the person.">m_txt_name</a>;
+<a name="l00062"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40">00062</a>   <span class="keyword">protected</span> TextView <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40" title="Reference to the TextView that contains the number of the person.">m_txt_number</a>;
+<a name="l00064"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a">00064</a>   <span class="keyword">protected</span> TextView <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a" title="Reference to the TextView that contains the number of sms this person caused.">m_txt_smscount</a>;
+<a name="l00066"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961">00066</a>   <span class="keyword">protected</span> CheckBox <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961" title="Reference to the CheckBox that indicates whether the person is authorised to cause...">m_chk_auth</a>;
+<a name="l00067"></a>00067   
+<a name="l00068"></a>00068   
+<a name="l00077"></a>00077   @Override
+<a name="l00078"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a85e87cb5ced88dff7c8173ecc4f636d1">00078</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a85e87cb5ced88dff7c8173ecc4f636d1" title="Callback method (Activity), called if a instance of this activity has been created...">onCreate</a>(Bundle savedInstanceState)
+<a name="l00079"></a>00079   {
+<a name="l00080"></a>00080     super.onCreate(savedInstanceState);
+<a name="l00081"></a>00081     this.setContentView(R.layout.buddy_layout);
+<a name="l00082"></a>00082     
+<a name="l00083"></a>00083     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1" title="Reference to the TextView that contains the name of the person.">m_txt_name</a> = (TextView)findViewById(R.id.buddy_txt_name);
+<a name="l00084"></a>00084     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40" title="Reference to the TextView that contains the number of the person.">m_txt_number</a> = (TextView)findViewById(R.id.buddy_txt_number);
+<a name="l00085"></a>00085     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a" title="Reference to the TextView that contains the number of sms this person caused.">m_txt_smscount</a> = (TextView)findViewById(R.id.buddy_txt_smscount);
+<a name="l00086"></a>00086     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961" title="Reference to the CheckBox that indicates whether the person is authorised to cause...">m_chk_auth</a> = (CheckBox)findViewById(R.id.buddy_chk_auth);
+<a name="l00087"></a>00087     
+<a name="l00088"></a>00088     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a> = <span class="keyword">new</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>(getApplicationContext());
+<a name="l00089"></a>00089   }
+<a name="l00090"></a>00090   
+<a name="l00098"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a19c18372250dc1c86e6272062f03c570">00098</a>   <span class="keyword">protected</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a19c18372250dc1c86e6272062f03c570" title="Helper method that extracts information from Intent extras.">extractData</a>()
+<a name="l00099"></a>00099   {
+<a name="l00100"></a>00100     Bundle bundle = getIntent().getExtras();
+<a name="l00101"></a>00101     <span class="keywordflow">if</span> (bundle != null)
+<a name="l00102"></a>00102     {
+<a name="l00103"></a>00103       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a> = bundle.getString(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82" title="Intent extra key of the number of the person whos info will be shown.">SHOW_NUMBER</a>);
+<a name="l00104"></a>00104       
+<a name="l00105"></a>00105       <span class="keywordflow">if</span> (<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a> != null)
+<a name="l00106"></a>00106       {
+<a name="l00107"></a>00107         <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>.Person person = <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a65685154282aef223f4f7bf4b3177993" title="Retrieves a person from the database.">getPersonFromNumber</a>(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>);
+<a name="l00108"></a>00108         <span class="keywordflow">if</span> (person != null)
+<a name="l00109"></a>00109         {
+<a name="l00110"></a>00110           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#abb8e1351ef24a50f114da151e26535f1" title="Reference to the TextView that contains the name of the person.">m_txt_name</a>.setText(person.name);
+<a name="l00111"></a>00111           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af02fd87771bb2bbca23441574635ad40" title="Reference to the TextView that contains the number of the person.">m_txt_number</a>.setText(person.number);
+<a name="l00112"></a>00112           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#acad2c8f9e192392f225702593cc3966a" title="Reference to the TextView that contains the number of sms this person caused.">m_txt_smscount</a>.setText(String.valueOf(person.smscount));
+<a name="l00113"></a>00113           <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#aadbd8010a9f90a597c9638423b507961" title="Reference to the CheckBox that indicates whether the person is authorised to cause...">m_chk_auth</a>.setChecked(person.authorised);
+<a name="l00114"></a>00114           <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00115"></a>00115         }
+<a name="l00116"></a>00116         <span class="keywordflow">else</span>
+<a name="l00117"></a>00117         {
+<a name="l00118"></a>00118           Log.w(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Couldn&#39;t find person with number %s&quot;</span>, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>));
+<a name="l00119"></a>00119         }
+<a name="l00120"></a>00120       }
+<a name="l00121"></a>00121       <span class="keywordflow">else</span>
+<a name="l00122"></a>00122       {
+<a name="l00123"></a>00123         Log.w(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG to identify log messages from this class.">TAG</a>, <span class="stringliteral">&quot;Intent has no extra-key &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#af43961df74153a380b6004b010f22e82" title="Intent extra key of the number of the person whos info will be shown.">SHOW_NUMBER</a>);
+<a name="l00124"></a>00124       }
+<a name="l00125"></a>00125     }
+<a name="l00126"></a>00126     
+<a name="l00127"></a>00127     <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00128"></a>00128   }
+<a name="l00129"></a>00129   
+<a name="l00135"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11b7cdeb39e10e105476cc9f62466695">00135</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11b7cdeb39e10e105476cc9f62466695" title="Callback method, called if m_chk_auth CheckBox has been clicked.">onAuthorisationChanged</a>(View v)
 <a name="l00136"></a>00136   {
-<a name="l00137"></a>00137     MenuInflater inflater = getMenuInflater();
-<a name="l00138"></a>00138     inflater.inflate(R.menu.buddy_menu, menu);
-<a name="l00139"></a>00139     <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00140"></a>00140   }
-<a name="l00141"></a>00141   
-<a name="l00148"></a>00148   @Override
-<a name="l00149"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a37a55c533c74b60c0290ef1329d74e65">00149</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a37a55c533c74b60c0290ef1329d74e65" title="Callback method (Activity), called if user pressed a menu item.">onOptionsItemSelected</a>(MenuItem item)
-<a name="l00150"></a>00150   {
-<a name="l00151"></a>00151     <span class="keywordflow">switch</span> (item.getItemId())
-<a name="l00152"></a>00152     {
-<a name="l00153"></a>00153       <span class="keywordflow">case</span> R.id.buddy_mnu_back:
-<a name="l00154"></a>00154         this.finish();    
-<a name="l00155"></a>00155         <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00156"></a>00156       
-<a name="l00157"></a>00157       <span class="keywordflow">case</span> R.id.buddy_mnu_delete:
-<a name="l00158"></a>00158         <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e" title="Removes a person from database.">deletePerson</a>(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>);
-<a name="l00159"></a>00159         this.finish();
-<a name="l00160"></a>00160         <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00161"></a>00161       
-<a name="l00162"></a>00162       <span class="keywordflow">case</span> R.id.buddy_mnu_locate:
-<a name="l00163"></a>00163         <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1Utils.html" title="This class has got some utility functions (static).">Utils</a>.sendLocateSMS(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>);
-<a name="l00164"></a>00164         Toast.makeText(<span class="keyword">this</span>, <span class="stringliteral">&quot;Locating...&quot;</span>, Toast.LENGTH_LONG).show();
-<a name="l00165"></a>00165         <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00166"></a>00166       
-<a name="l00167"></a>00167       <span class="keywordflow">default</span>:
-<a name="l00168"></a>00168         <span class="keywordflow">return</span> super.onOptionsItemSelected(item);
-<a name="l00169"></a>00169     }
-<a name="l00170"></a>00170   }
-<a name="l00171"></a>00171   
-<a name="l00177"></a>00177   @Override
-<a name="l00178"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11bcf4e3177fdb549350a4aa149e9e67">00178</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11bcf4e3177fdb549350a4aa149e9e67" title="Callback method (Activity), called if Activity got started.">onStart</a>()
-<a name="l00179"></a>00179   {
-<a name="l00180"></a>00180     super.onStart();
-<a name="l00181"></a>00181     <span class="keywordflow">if</span> (!<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a19c18372250dc1c86e6272062f03c570" title="Helper method that extracts information from Intent extras.">extractData</a>())
-<a name="l00182"></a>00182     {
-<a name="l00183"></a>00183       this.finish();
-<a name="l00184"></a>00184     }
-<a name="l00185"></a>00185   }
-<a name="l00186"></a>00186   
-<a name="l00188"></a>00188   @Override
-<a name="l00189"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8a744b43949a3939f448facad211e3d2">00189</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8a744b43949a3939f448facad211e3d2" title="Callback method (Activity), called if Activity is destroyed.">onDestroy</a>()
-<a name="l00190"></a>00190   {
-<a name="l00191"></a>00191     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.close();
-<a name="l00192"></a>00192     super.onDestroy();
-<a name="l00193"></a>00193   }
-<a name="l00194"></a>00194 }
+<a name="l00137"></a>00137     <span class="keywordflow">if</span> (v.getId() == R.id.buddy_chk_auth)
+<a name="l00138"></a>00138     {
+<a name="l00139"></a>00139       CheckBox cbox = (CheckBox)v;
+<a name="l00140"></a>00140       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>.Person person = <span class="keyword">new</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a>.Person();
+<a name="l00141"></a>00141       person.number = <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>;
+<a name="l00142"></a>00142       person.authorised = cbox.isChecked();
+<a name="l00143"></a>00143       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a609bef5ef4b740a5473bc45e6f2de8a7" title="Updates some properties of a person.">updatePerson</a>(person, <span class="keyword">false</span>, <span class="keyword">true</span>, <span class="keyword">false</span>);
+<a name="l00144"></a>00144     }
+<a name="l00145"></a>00145   }
+<a name="l00146"></a>00146   
+<a name="l00152"></a>00152   @Override
+<a name="l00153"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8f7d87763ddaf085205a54e8477ecfce">00153</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8f7d87763ddaf085205a54e8477ecfce" title="Callback method (Activity), called if menu has to be created.">onCreateOptionsMenu</a>(Menu menu)
+<a name="l00154"></a>00154   {
+<a name="l00155"></a>00155     MenuInflater inflater = getMenuInflater();
+<a name="l00156"></a>00156     inflater.inflate(R.menu.buddy_menu, menu);
+<a name="l00157"></a>00157     <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00158"></a>00158   }
+<a name="l00159"></a>00159   
+<a name="l00166"></a>00166   @Override
+<a name="l00167"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a37a55c533c74b60c0290ef1329d74e65">00167</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a37a55c533c74b60c0290ef1329d74e65" title="Callback method (Activity), called if user pressed a menu item.">onOptionsItemSelected</a>(MenuItem item)
+<a name="l00168"></a>00168   {
+<a name="l00169"></a>00169     <span class="keywordflow">switch</span> (item.getItemId())
+<a name="l00170"></a>00170     {
+<a name="l00171"></a>00171       <span class="keywordflow">case</span> R.id.buddy_mnu_back:
+<a name="l00172"></a>00172         this.finish();    
+<a name="l00173"></a>00173         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00174"></a>00174       
+<a name="l00175"></a>00175       <span class="keywordflow">case</span> R.id.buddy_mnu_delete:
+<a name="l00176"></a>00176         <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e" title="Removes a person from database.">deletePerson</a>(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>);
+<a name="l00177"></a>00177         this.finish();
+<a name="l00178"></a>00178         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00179"></a>00179       
+<a name="l00180"></a>00180       <span class="keywordflow">case</span> R.id.buddy_mnu_locate:
+<a name="l00181"></a>00181         <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1Utils.html" title="This class has got some utility functions (static).">Utils</a>.sendLocateSMS(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a1e3167dd1d1ba289b96e9e0e2732ab72" title="Extracted number of the person that is currently shown.">m_number</a>);
+<a name="l00182"></a>00182         Toast.makeText(<span class="keyword">this</span>, <span class="stringliteral">&quot;Locating...&quot;</span>, Toast.LENGTH_LONG).show();
+<a name="l00183"></a>00183         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00184"></a>00184       
+<a name="l00185"></a>00185       <span class="keywordflow">default</span>:
+<a name="l00186"></a>00186         <span class="keywordflow">return</span> super.onOptionsItemSelected(item);
+<a name="l00187"></a>00187     }
+<a name="l00188"></a>00188   }
+<a name="l00189"></a>00189   
+<a name="l00195"></a>00195   @Override
+<a name="l00196"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11bcf4e3177fdb549350a4aa149e9e67">00196</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a11bcf4e3177fdb549350a4aa149e9e67" title="Callback method (Activity), called if Activity got started.">onStart</a>()
+<a name="l00197"></a>00197   {
+<a name="l00198"></a>00198     super.onStart();
+<a name="l00199"></a>00199     <span class="keywordflow">if</span> (!<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a19c18372250dc1c86e6272062f03c570" title="Helper method that extracts information from Intent extras.">extractData</a>())
+<a name="l00200"></a>00200     {
+<a name="l00201"></a>00201       this.finish();
+<a name="l00202"></a>00202     }
+<a name="l00203"></a>00203   }
+<a name="l00204"></a>00204   
+<a name="l00206"></a>00206   @Override
+<a name="l00207"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8a744b43949a3939f448facad211e3d2">00207</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a8a744b43949a3939f448facad211e3d2" title="Callback method (Activity), called if Activity is destroyed.">onDestroy</a>()
+<a name="l00208"></a>00208   {
+<a name="l00209"></a>00209     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1BuddyActivity.html#a78a70aa3bc67b20b797cfc33a694b79b" title="Database to retrieve information about the person (and change certain settings).">m_db</a>.close();
+<a name="l00210"></a>00210     super.onDestroy();
+<a name="l00211"></a>00211   }
+<a name="l00212"></a>00212 }
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -202,7 +220,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sat Sep 1 00:51:47 2012 for loco by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Tue Oct 23 20:10:37 2012 for loco by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>

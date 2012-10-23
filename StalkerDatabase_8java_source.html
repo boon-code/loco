@@ -41,263 +41,281 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="files.html"><span>File&nbsp;List</span></a></li>
     </ul>
   </div>
-<h1>src/org/booncode/android/loco/StalkerDatabase.java</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="keyword">package </span>org.booncode.android.loco;
-<a name="l00002"></a>00002 
-<a name="l00003"></a>00003 <span class="keyword">import</span> android.database.sqlite.SQLiteOpenHelper;
-<a name="l00004"></a>00004 <span class="keyword">import</span> android.database.sqlite.SQLiteDatabase;
-<a name="l00005"></a>00005 <span class="keyword">import</span> android.database.Cursor;
-<a name="l00006"></a>00006 <span class="keyword">import</span> android.content.ContentValues;
-<a name="l00007"></a>00007 <span class="keyword">import</span> android.content.Context;
-<a name="l00008"></a>00008 <span class="keyword">import</span> android.util.Log;
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 <span class="keyword">import</span> android.database.sqlite.SQLiteException;
-<a name="l00011"></a>00011 <span class="keyword">import</span> android.database.sqlite.SQLiteConstraintException;
-<a name="l00012"></a>00012 
-<a name="l00013"></a>00013 
-<a name="l00020"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html">00020</a> <span class="keyword">public</span> <span class="keyword">class </span><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a> <span class="keyword">extends</span> SQLiteOpenHelper
-<a name="l00021"></a>00021 {
-<a name="l00023"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a70886fa3a90b69f213ab64f42aa229e5">00023</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a70886fa3a90b69f213ab64f42aa229e5" title="The filename (private; this application only) of the database.">DATABASE_FILE</a> = <span class="stringliteral">&quot;stalkerdb&quot;</span>;
-<a name="l00027"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4418255697bdbe4056215b3439562e5b">00027</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keywordtype">int</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4418255697bdbe4056215b3439562e5b" title="Version of the database (can be used to identify and updated outdated database from...">DATABASE_VERSION</a> = 1;
-<a name="l00029"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9">00029</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a> = <span class="stringliteral">&quot;persons&quot;</span>;
-<a name="l00031"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a">00031</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a> = <span class="stringliteral">&quot;loco.StalkerDatabase&quot;</span>;
-<a name="l00032"></a>00032   
-<a name="l00036"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html">00036</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class </span><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>
-<a name="l00037"></a>00037   {
-<a name="l00039"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a2e2a8b5e4b33363e36e2d75ff425c86c">00039</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a2e2a8b5e4b33363e36e2d75ff425c86c" title="The Key of the name.">NAME</a> = <span class="stringliteral">&quot;name&quot;</span>;
-<a name="l00041"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a34434a758d19025799439e49d8287d11">00041</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a34434a758d19025799439e49d8287d11" title="The Key of the telephone number.">NUMBER</a> = <span class="stringliteral">&quot;number&quot;</span>;
-<a name="l00043"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a44ffe3b3220a69d04f057944351c1450">00043</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a44ffe3b3220a69d04f057944351c1450" title="The Key of the authorisation flag.">AUTHORISED</a> = <span class="stringliteral">&quot;auth&quot;</span>;
-<a name="l00045"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#ade4a221a2fc997df0ef2bde588345bfa">00045</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#ade4a221a2fc997df0ef2bde588345bfa" title="The Key of the sms count field.">SMS_COUNT</a> = <span class="stringliteral">&quot;smscount&quot;</span>;
-<a name="l00046"></a>00046     
-<a name="l00048"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557">00048</a>     <span class="keyword">public</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557" title="The name of the person.">name</a>;
-<a name="l00050"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a">00050</a>     <span class="keyword">public</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a>;
-<a name="l00052"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444">00052</a>     <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444" title="Flag whether this person is authorised to trigger sms-response (locating).">authorised</a>;
-<a name="l00054"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc">00054</a>     <span class="keyword">public</span> <span class="keywordtype">int</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc" title="Counter of how many sms have been caused by this person (on this device).">smscount</a>;
-<a name="l00055"></a>00055   }
-<a name="l00056"></a>00056   
-<a name="l00057"></a>00057   
-<a name="l00062"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4b3b3dae1d41fc8db16b77894f9e4d2e">00062</a>   <span class="keyword">public</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4b3b3dae1d41fc8db16b77894f9e4d2e" title="Constructor; Initializes database.">StalkerDatabase</a>(Context context)
-<a name="l00063"></a>00063   {
-<a name="l00064"></a>00064     <span class="comment">// null means use default factory...</span>
-<a name="l00065"></a>00065     super(context, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a70886fa3a90b69f213ab64f42aa229e5" title="The filename (private; this application only) of the database.">DATABASE_FILE</a>, null, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4418255697bdbe4056215b3439562e5b" title="Version of the database (can be used to identify and updated outdated database from...">DATABASE_VERSION</a>);
-<a name="l00066"></a>00066   }
-<a name="l00067"></a>00067   
-<a name="l00075"></a>00075   @Override
-<a name="l00076"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a98b247cd7e075d076b0364beee305621">00076</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a98b247cd7e075d076b0364beee305621" title="Callback method (SQLiteOpenHelper), called if database object has been created, but...">onCreate</a>(SQLiteDatabase db)
-<a name="l00077"></a>00077   {
-<a name="l00078"></a>00078     db.execSQL(<span class="stringliteral">&quot;create table &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a> + <span class="stringliteral">&quot; ( &quot;</span> +
-<a name="l00079"></a>00079                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; TEXT PRIMARY KEY, &quot;</span> +
-<a name="l00080"></a>00080                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME + <span class="stringliteral">&quot; TEXT, &quot;</span> +
-<a name="l00081"></a>00081                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED + <span class="stringliteral">&quot; INTEGER, &quot;</span> +
-<a name="l00082"></a>00082                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT + <span class="stringliteral">&quot; INTEGER)&quot;</span>);
-<a name="l00083"></a>00083   }
-<a name="l00084"></a>00084   
-<a name="l00098"></a>00098   @Override
-<a name="l00099"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a37ae531787d39b22a2dbc2f62c952c60">00099</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a37ae531787d39b22a2dbc2f62c952c60" title="Callback method (SQLiteOpenHelper), called if older version of this database has...">onUpgrade</a>(SQLiteDatabase db, <span class="keywordtype">int</span> oldversion, <span class="keywordtype">int</span> newversion)
-<a name="l00100"></a>00100   {
-<a name="l00101"></a>00101     <span class="keywordflow">if</span> (oldversion != newversion)
-<a name="l00102"></a>00102     {
-<a name="l00103"></a>00103       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;db-version missmatch (old=%d, new=%d)&quot;</span>, 
-<a name="l00104"></a>00104                                oldversion, newversion));
-<a name="l00105"></a>00105       
-<a name="l00106"></a>00106       db.execSQL(<span class="stringliteral">&quot;drop table if exists  &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>);
-<a name="l00107"></a>00107       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a98b247cd7e075d076b0364beee305621" title="Callback method (SQLiteOpenHelper), called if database object has been created, but...">onCreate</a>(db);
-<a name="l00108"></a>00108     }
-<a name="l00109"></a>00109   }
-<a name="l00110"></a>00110   
-<a name="l00120"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a5788041a71f849b8687507c4f29d6296">00120</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a5788041a71f849b8687507c4f29d6296" title="Adds a person to the database.">addPerson</a>(String number, String name, <span class="keywordtype">boolean</span> authorised)
-<a name="l00121"></a>00121   {
-<a name="l00122"></a>00122     SQLiteDatabase db = this.getWritableDatabase();
-<a name="l00123"></a>00123     ContentValues content = <span class="keyword">new</span> ContentValues();
-<a name="l00124"></a>00124     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME, name);
-<a name="l00125"></a>00125     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER, number);
-<a name="l00126"></a>00126     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#aadb65d33ad45156e6e0677519901efcb" title="Helper method that converts boolean to an integer.">getAuthorisedDBValue</a>(authorised));
-<a name="l00127"></a>00127     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT, 0);
-<a name="l00128"></a>00128     
-<a name="l00129"></a>00129     <span class="keywordtype">long</span> ret = db.insert(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, null, content);
-<a name="l00130"></a>00130     
-<a name="l00131"></a>00131     db.close();
-<a name="l00132"></a>00132     
-<a name="l00133"></a>00133     <span class="keywordflow">if</span> (ret &lt; 0)
-<a name="l00134"></a>00134     {
-<a name="l00135"></a>00135       Log.w(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Couldn&#39;t insert data (number=%s, name=%s&quot;</span>, number, name));
-<a name="l00136"></a>00136       <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00137"></a>00137     }
-<a name="l00138"></a>00138     <span class="keywordflow">else</span>
-<a name="l00139"></a>00139     {
-<a name="l00140"></a>00140       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Successfully added name=%s, number=%s&quot;</span>, name, number));
-<a name="l00141"></a>00141       <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00142"></a>00142     }
-<a name="l00143"></a>00143   }
-<a name="l00144"></a>00144   
-<a name="l00151"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#abcea314c7857be22a8b1f5b17d85aeb0">00151</a>   <span class="keyword">public</span> Cursor <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#abcea314c7857be22a8b1f5b17d85aeb0" title="Queries all persons of this database.">queryAllPersons</a>()
-<a name="l00152"></a>00152   {
-<a name="l00153"></a>00153     SQLiteDatabase db = this.getReadableDatabase();
-<a name="l00154"></a>00154     <span class="keywordflow">return</span> db.rawQuery(<span class="stringliteral">&quot;select rowid _id, * from &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, null);
-<a name="l00155"></a>00155   }
-<a name="l00156"></a>00156   
-<a name="l00164"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a546fca7f5616cc5044aa4e4fb3d73812">00164</a>   <span class="keyword">public</span> Cursor <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a546fca7f5616cc5044aa4e4fb3d73812" title="Queries all authorised persons of this database.">queryAllAuthorisedPersons</a>()
-<a name="l00165"></a>00165   {
-<a name="l00166"></a>00166     SQLiteDatabase db = this.getReadableDatabase();
-<a name="l00167"></a>00167     <span class="keywordflow">return</span> db.rawQuery(<span class="stringliteral">&quot;select rowid _id, * from &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a> +
-<a name="l00168"></a>00168                        <span class="stringliteral">&quot; where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED + <span class="stringliteral">&quot; &lt;&gt; 0&quot;</span>, null);
-<a name="l00169"></a>00169   }
-<a name="l00170"></a>00170   
-<a name="l00175"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e">00175</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e" title="Removes a person from database.">deletePerson</a>(<span class="keywordtype">long</span> rowid)
-<a name="l00176"></a>00176   {
-<a name="l00177"></a>00177     SQLiteDatabase db = this.getWritableDatabase();
-<a name="l00178"></a>00178     <span class="keywordtype">int</span> ret = db.delete(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, <span class="stringliteral">&quot;rowid = ?&quot;</span>, 
-<a name="l00179"></a>00179                         <span class="keyword">new</span> String[]{String.valueOf(rowid)});
-<a name="l00180"></a>00180     <span class="keywordflow">if</span> (ret != 1)
-<a name="l00181"></a>00181     {
-<a name="l00182"></a>00182       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Deleting rowid %d returned %d&quot;</span>, rowid, ret));
-<a name="l00183"></a>00183     }
-<a name="l00184"></a>00184     db.close();
-<a name="l00185"></a>00185   }
-<a name="l00186"></a>00186   
-<a name="l00191"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ae9d2a2846e1bbbdd26061959506418bf">00191</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e" title="Removes a person from database.">deletePerson</a>(String number)
-<a name="l00192"></a>00192   {
-<a name="l00193"></a>00193     SQLiteDatabase db = this.getWritableDatabase();
-<a name="l00194"></a>00194     <span class="keywordtype">int</span> ret = db.delete(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>, 
-<a name="l00195"></a>00195                         <span class="keyword">new</span> String[]{number});
-<a name="l00196"></a>00196     <span class="keywordflow">if</span> (ret != 1)
-<a name="l00197"></a>00197     {
-<a name="l00198"></a>00198       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Deleting number %s returned %d&quot;</span>, number, ret));
-<a name="l00199"></a>00199     }
-<a name="l00200"></a>00200     db.close();
-<a name="l00201"></a>00201   }
-<a name="l00202"></a>00202   
-<a name="l00209"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a58d2fe65cb9dd83df9f51e4d3feac321">00209</a>   <span class="keyword">public</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> getPersonFromId(<span class="keywordtype">long</span> rowid)
+<h1>src/org/booncode/android/loco/StalkerDatabase.java</h1><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/* *******************************************************************************</span>
+<a name="l00002"></a>00002 <span class="comment"> * LOCO - Localizes the position of you mobile.</span>
+<a name="l00003"></a>00003 <span class="comment"> * Copyright (C) 2012  Manuel Huber</span>
+<a name="l00004"></a>00004 <span class="comment"> * </span>
+<a name="l00005"></a>00005 <span class="comment"> * This program is free software; you can redistribute it and/or</span>
+<a name="l00006"></a>00006 <span class="comment"> * modify it under the terms of the GNU General Public License</span>
+<a name="l00007"></a>00007 <span class="comment"> * as published by the Free Software Foundation; either version 2</span>
+<a name="l00008"></a>00008 <span class="comment"> * of the License, or (at your option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * </span>
+<a name="l00010"></a>00010 <span class="comment"> * This program is distributed in the hope that it will be useful,</span>
+<a name="l00011"></a>00011 <span class="comment"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<a name="l00012"></a>00012 <span class="comment"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<a name="l00013"></a>00013 <span class="comment"> * GNU General Public License for more details.</span>
+<a name="l00014"></a>00014 <span class="comment"> * </span>
+<a name="l00015"></a>00015 <span class="comment"> * You should have received a copy of the GNU General Public License</span>
+<a name="l00016"></a>00016 <span class="comment"> * along with this program; if not, write to the Free Software</span>
+<a name="l00017"></a>00017 <span class="comment"> * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.</span>
+<a name="l00018"></a>00018 <span class="comment"> * *******************************************************************************/</span>
+<a name="l00019"></a>00019 <span class="keyword">package </span>org.booncode.android.loco;
+<a name="l00020"></a>00020 
+<a name="l00021"></a>00021 <span class="keyword">import</span> android.database.sqlite.SQLiteOpenHelper;
+<a name="l00022"></a>00022 <span class="keyword">import</span> android.database.sqlite.SQLiteDatabase;
+<a name="l00023"></a>00023 <span class="keyword">import</span> android.database.Cursor;
+<a name="l00024"></a>00024 <span class="keyword">import</span> android.content.ContentValues;
+<a name="l00025"></a>00025 <span class="keyword">import</span> android.content.Context;
+<a name="l00026"></a>00026 <span class="keyword">import</span> android.util.Log;
+<a name="l00027"></a>00027 
+<a name="l00028"></a>00028 <span class="keyword">import</span> android.database.sqlite.SQLiteException;
+<a name="l00029"></a>00029 <span class="keyword">import</span> android.database.sqlite.SQLiteConstraintException;
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 
+<a name="l00038"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html">00038</a> <span class="keyword">public</span> <span class="keyword">class </span><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html" title="This class handles an private sql database of all persons that are related to this...">StalkerDatabase</a> <span class="keyword">extends</span> SQLiteOpenHelper
+<a name="l00039"></a>00039 {
+<a name="l00041"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a70886fa3a90b69f213ab64f42aa229e5">00041</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a70886fa3a90b69f213ab64f42aa229e5" title="The filename (private; this application only) of the database.">DATABASE_FILE</a> = <span class="stringliteral">&quot;stalkerdb&quot;</span>;
+<a name="l00045"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4418255697bdbe4056215b3439562e5b">00045</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keywordtype">int</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4418255697bdbe4056215b3439562e5b" title="Version of the database (can be used to identify and updated outdated database from...">DATABASE_VERSION</a> = 1;
+<a name="l00047"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9">00047</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a> = <span class="stringliteral">&quot;persons&quot;</span>;
+<a name="l00049"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a">00049</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a> = <span class="stringliteral">&quot;loco.StalkerDatabase&quot;</span>;
+<a name="l00050"></a>00050   
+<a name="l00054"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html">00054</a>   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class </span><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>
+<a name="l00055"></a>00055   {
+<a name="l00057"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a2e2a8b5e4b33363e36e2d75ff425c86c">00057</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a2e2a8b5e4b33363e36e2d75ff425c86c" title="The Key of the name.">NAME</a> = <span class="stringliteral">&quot;name&quot;</span>;
+<a name="l00059"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a34434a758d19025799439e49d8287d11">00059</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a34434a758d19025799439e49d8287d11" title="The Key of the telephone number.">NUMBER</a> = <span class="stringliteral">&quot;number&quot;</span>;
+<a name="l00061"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a44ffe3b3220a69d04f057944351c1450">00061</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a44ffe3b3220a69d04f057944351c1450" title="The Key of the authorisation flag.">AUTHORISED</a> = <span class="stringliteral">&quot;auth&quot;</span>;
+<a name="l00063"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#ade4a221a2fc997df0ef2bde588345bfa">00063</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#ade4a221a2fc997df0ef2bde588345bfa" title="The Key of the sms count field.">SMS_COUNT</a> = <span class="stringliteral">&quot;smscount&quot;</span>;
+<a name="l00064"></a>00064     
+<a name="l00066"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557">00066</a>     <span class="keyword">public</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557" title="The name of the person.">name</a>;
+<a name="l00068"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a">00068</a>     <span class="keyword">public</span> String <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a>;
+<a name="l00070"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444">00070</a>     <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444" title="Flag whether this person is authorised to trigger sms-response (locating).">authorised</a>;
+<a name="l00072"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc">00072</a>     <span class="keyword">public</span> <span class="keywordtype">int</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc" title="Counter of how many sms have been caused by this person (on this device).">smscount</a>;
+<a name="l00073"></a>00073   }
+<a name="l00074"></a>00074   
+<a name="l00075"></a>00075   
+<a name="l00080"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4b3b3dae1d41fc8db16b77894f9e4d2e">00080</a>   <span class="keyword">public</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4b3b3dae1d41fc8db16b77894f9e4d2e" title="Constructor; Initializes database.">StalkerDatabase</a>(Context context)
+<a name="l00081"></a>00081   {
+<a name="l00082"></a>00082     <span class="comment">// null means use default factory...</span>
+<a name="l00083"></a>00083     super(context, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a70886fa3a90b69f213ab64f42aa229e5" title="The filename (private; this application only) of the database.">DATABASE_FILE</a>, null, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a4418255697bdbe4056215b3439562e5b" title="Version of the database (can be used to identify and updated outdated database from...">DATABASE_VERSION</a>);
+<a name="l00084"></a>00084   }
+<a name="l00085"></a>00085   
+<a name="l00093"></a>00093   @Override
+<a name="l00094"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a98b247cd7e075d076b0364beee305621">00094</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a98b247cd7e075d076b0364beee305621" title="Callback method (SQLiteOpenHelper), called if database object has been created, but...">onCreate</a>(SQLiteDatabase db)
+<a name="l00095"></a>00095   {
+<a name="l00096"></a>00096     db.execSQL(<span class="stringliteral">&quot;create table &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a> + <span class="stringliteral">&quot; ( &quot;</span> +
+<a name="l00097"></a>00097                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; TEXT PRIMARY KEY, &quot;</span> +
+<a name="l00098"></a>00098                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME + <span class="stringliteral">&quot; TEXT, &quot;</span> +
+<a name="l00099"></a>00099                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED + <span class="stringliteral">&quot; INTEGER, &quot;</span> +
+<a name="l00100"></a>00100                <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT + <span class="stringliteral">&quot; INTEGER)&quot;</span>);
+<a name="l00101"></a>00101   }
+<a name="l00102"></a>00102   
+<a name="l00116"></a>00116   @Override
+<a name="l00117"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a37ae531787d39b22a2dbc2f62c952c60">00117</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a37ae531787d39b22a2dbc2f62c952c60" title="Callback method (SQLiteOpenHelper), called if older version of this database has...">onUpgrade</a>(SQLiteDatabase db, <span class="keywordtype">int</span> oldversion, <span class="keywordtype">int</span> newversion)
+<a name="l00118"></a>00118   {
+<a name="l00119"></a>00119     <span class="keywordflow">if</span> (oldversion != newversion)
+<a name="l00120"></a>00120     {
+<a name="l00121"></a>00121       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;db-version missmatch (old=%d, new=%d)&quot;</span>, 
+<a name="l00122"></a>00122                                oldversion, newversion));
+<a name="l00123"></a>00123       
+<a name="l00124"></a>00124       db.execSQL(<span class="stringliteral">&quot;drop table if exists  &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>);
+<a name="l00125"></a>00125       <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a98b247cd7e075d076b0364beee305621" title="Callback method (SQLiteOpenHelper), called if database object has been created, but...">onCreate</a>(db);
+<a name="l00126"></a>00126     }
+<a name="l00127"></a>00127   }
+<a name="l00128"></a>00128   
+<a name="l00138"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a5788041a71f849b8687507c4f29d6296">00138</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a5788041a71f849b8687507c4f29d6296" title="Adds a person to the database.">addPerson</a>(String number, String name, <span class="keywordtype">boolean</span> authorised)
+<a name="l00139"></a>00139   {
+<a name="l00140"></a>00140     SQLiteDatabase db = this.getWritableDatabase();
+<a name="l00141"></a>00141     ContentValues content = <span class="keyword">new</span> ContentValues();
+<a name="l00142"></a>00142     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME, name);
+<a name="l00143"></a>00143     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER, number);
+<a name="l00144"></a>00144     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#aadb65d33ad45156e6e0677519901efcb" title="Helper method that converts boolean to an integer.">getAuthorisedDBValue</a>(authorised));
+<a name="l00145"></a>00145     content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT, 0);
+<a name="l00146"></a>00146     
+<a name="l00147"></a>00147     <span class="keywordtype">long</span> ret = db.insert(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, null, content);
+<a name="l00148"></a>00148     
+<a name="l00149"></a>00149     db.close();
+<a name="l00150"></a>00150     
+<a name="l00151"></a>00151     <span class="keywordflow">if</span> (ret &lt; 0)
+<a name="l00152"></a>00152     {
+<a name="l00153"></a>00153       Log.w(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Couldn&#39;t insert data (number=%s, name=%s&quot;</span>, number, name));
+<a name="l00154"></a>00154       <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00155"></a>00155     }
+<a name="l00156"></a>00156     <span class="keywordflow">else</span>
+<a name="l00157"></a>00157     {
+<a name="l00158"></a>00158       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Successfully added name=%s, number=%s&quot;</span>, name, number));
+<a name="l00159"></a>00159       <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00160"></a>00160     }
+<a name="l00161"></a>00161   }
+<a name="l00162"></a>00162   
+<a name="l00169"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#abcea314c7857be22a8b1f5b17d85aeb0">00169</a>   <span class="keyword">public</span> Cursor <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#abcea314c7857be22a8b1f5b17d85aeb0" title="Queries all persons of this database.">queryAllPersons</a>()
+<a name="l00170"></a>00170   {
+<a name="l00171"></a>00171     SQLiteDatabase db = this.getReadableDatabase();
+<a name="l00172"></a>00172     <span class="keywordflow">return</span> db.rawQuery(<span class="stringliteral">&quot;select rowid _id, * from &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, null);
+<a name="l00173"></a>00173   }
+<a name="l00174"></a>00174   
+<a name="l00182"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a546fca7f5616cc5044aa4e4fb3d73812">00182</a>   <span class="keyword">public</span> Cursor <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a546fca7f5616cc5044aa4e4fb3d73812" title="Queries all authorised persons of this database.">queryAllAuthorisedPersons</a>()
+<a name="l00183"></a>00183   {
+<a name="l00184"></a>00184     SQLiteDatabase db = this.getReadableDatabase();
+<a name="l00185"></a>00185     <span class="keywordflow">return</span> db.rawQuery(<span class="stringliteral">&quot;select rowid _id, * from &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a> +
+<a name="l00186"></a>00186                        <span class="stringliteral">&quot; where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED + <span class="stringliteral">&quot; &lt;&gt; 0&quot;</span>, null);
+<a name="l00187"></a>00187   }
+<a name="l00188"></a>00188   
+<a name="l00193"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e">00193</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e" title="Removes a person from database.">deletePerson</a>(<span class="keywordtype">long</span> rowid)
+<a name="l00194"></a>00194   {
+<a name="l00195"></a>00195     SQLiteDatabase db = this.getWritableDatabase();
+<a name="l00196"></a>00196     <span class="keywordtype">int</span> ret = db.delete(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, <span class="stringliteral">&quot;rowid = ?&quot;</span>, 
+<a name="l00197"></a>00197                         <span class="keyword">new</span> String[]{String.valueOf(rowid)});
+<a name="l00198"></a>00198     <span class="keywordflow">if</span> (ret != 1)
+<a name="l00199"></a>00199     {
+<a name="l00200"></a>00200       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Deleting rowid %d returned %d&quot;</span>, rowid, ret));
+<a name="l00201"></a>00201     }
+<a name="l00202"></a>00202     db.close();
+<a name="l00203"></a>00203   }
+<a name="l00204"></a>00204   
+<a name="l00209"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ae9d2a2846e1bbbdd26061959506418bf">00209</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#affaee13de2597009bf006d08fb7b0c0e" title="Removes a person from database.">deletePerson</a>(String number)
 <a name="l00210"></a>00210   {
-<a name="l00211"></a>00211     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person = null;
-<a name="l00212"></a>00212     SQLiteDatabase db = this.getReadableDatabase();
-<a name="l00213"></a>00213     Cursor cursor = db.rawQuery(<span class="stringliteral">&quot;select rowid, * from &quot;</span> + TABLE_PERSONS +
-<a name="l00214"></a>00214         <span class="stringliteral">&quot; where rowid = ?&quot;</span>, <span class="keyword">new</span> String[]{String.valueOf(rowid)});
-<a name="l00215"></a>00215     
-<a name="l00216"></a>00216     <span class="keywordflow">if</span> (cursor.moveToFirst())
-<a name="l00217"></a>00217     {
-<a name="l00218"></a>00218       person = toPerson(cursor);
-<a name="l00219"></a>00219     }
-<a name="l00220"></a>00220     
-<a name="l00221"></a>00221     cursor.close();
-<a name="l00222"></a>00222     db.close();
-<a name="l00223"></a>00223     <span class="keywordflow">return</span> person;
-<a name="l00224"></a>00224   }
-<a name="l00225"></a>00225   
-<a name="l00232"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a65685154282aef223f4f7bf4b3177993">00232</a>   <span class="keyword">public</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> getPersonFromNumber(String number)
-<a name="l00233"></a>00233   {
-<a name="l00234"></a>00234     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person = null;
-<a name="l00235"></a>00235     SQLiteDatabase db = this.getReadableDatabase();
-<a name="l00236"></a>00236     Cursor cursor = db.rawQuery(<span class="stringliteral">&quot;select * from &quot;</span> + TABLE_PERSONS +
-<a name="l00237"></a>00237         <span class="stringliteral">&quot; where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>, <span class="keyword">new</span> String[]{number});
+<a name="l00211"></a>00211     SQLiteDatabase db = this.getWritableDatabase();
+<a name="l00212"></a>00212     <span class="keywordtype">int</span> ret = db.delete(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ab2c26668bd18826db3f5218845eadae9" title="Name of the sql table that holds all info about persons.">TABLE_PERSONS</a>, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>, 
+<a name="l00213"></a>00213                         <span class="keyword">new</span> String[]{number});
+<a name="l00214"></a>00214     <span class="keywordflow">if</span> (ret != 1)
+<a name="l00215"></a>00215     {
+<a name="l00216"></a>00216       Log.d(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a844c5efdea72aa6bf76fb98b1072572a" title="TAG used to identify log messages from this class.">TAG</a>, String.format(<span class="stringliteral">&quot;Deleting number %s returned %d&quot;</span>, number, ret));
+<a name="l00217"></a>00217     }
+<a name="l00218"></a>00218     db.close();
+<a name="l00219"></a>00219   }
+<a name="l00220"></a>00220   
+<a name="l00227"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a58d2fe65cb9dd83df9f51e4d3feac321">00227</a>   <span class="keyword">public</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> getPersonFromId(<span class="keywordtype">long</span> rowid)
+<a name="l00228"></a>00228   {
+<a name="l00229"></a>00229     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person = null;
+<a name="l00230"></a>00230     SQLiteDatabase db = this.getReadableDatabase();
+<a name="l00231"></a>00231     Cursor cursor = db.rawQuery(<span class="stringliteral">&quot;select rowid, * from &quot;</span> + TABLE_PERSONS +
+<a name="l00232"></a>00232         <span class="stringliteral">&quot; where rowid = ?&quot;</span>, <span class="keyword">new</span> String[]{String.valueOf(rowid)});
+<a name="l00233"></a>00233     
+<a name="l00234"></a>00234     <span class="keywordflow">if</span> (cursor.moveToFirst())
+<a name="l00235"></a>00235     {
+<a name="l00236"></a>00236       person = toPerson(cursor);
+<a name="l00237"></a>00237     }
 <a name="l00238"></a>00238     
-<a name="l00239"></a>00239     <span class="keywordflow">if</span> (cursor.moveToFirst())
-<a name="l00240"></a>00240     {
-<a name="l00241"></a>00241       person = toPerson(cursor);
-<a name="l00242"></a>00242     }
-<a name="l00243"></a>00243     
-<a name="l00244"></a>00244     cursor.close();
-<a name="l00245"></a>00245     db.close();
-<a name="l00246"></a>00246     <span class="keywordflow">return</span> person;
-<a name="l00247"></a>00247   }
-<a name="l00248"></a>00248   
-<a name="l00256"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a8602adb08d08982a5fd8ab1bff133409">00256</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> isAuthorisedNumber(String number)
-<a name="l00257"></a>00257   {
-<a name="l00258"></a>00258     <span class="keywordtype">boolean</span> ret = <span class="keyword">false</span>;
-<a name="l00259"></a>00259     SQLiteDatabase db = this.getReadableDatabase();
-<a name="l00260"></a>00260     Cursor cursor = db.rawQuery(<span class="stringliteral">&quot;select * from &quot;</span> + TABLE_PERSONS +
-<a name="l00261"></a>00261         <span class="stringliteral">&quot; where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>, <span class="keyword">new</span> String[]{number});
-<a name="l00262"></a>00262     
-<a name="l00263"></a>00263     <span class="keywordflow">if</span> (cursor.moveToFirst())
-<a name="l00264"></a>00264     {
-<a name="l00265"></a>00265       ret = isCurrentAuthorised(cursor);
-<a name="l00266"></a>00266     }
-<a name="l00267"></a>00267     
-<a name="l00268"></a>00268     cursor.close();
-<a name="l00269"></a>00269     db.close();
-<a name="l00270"></a>00270     <span class="keywordflow">return</span> ret;
-<a name="l00271"></a>00271   }
-<a name="l00272"></a>00272   
-<a name="l00278"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a7f5d0445b0b6dc9f4d709b46482c6eb5">00278</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> increaseSMSCount(String number)
-<a name="l00279"></a>00279   {
-<a name="l00280"></a>00280     SQLiteDatabase db = this.getWritableDatabase();
-<a name="l00281"></a>00281     db.execSQL(<span class="stringliteral">&quot;update &quot;</span> + TABLE_PERSONS + 
-<a name="l00282"></a>00282           <span class="stringliteral">&quot; set &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT + <span class="stringliteral">&quot; = &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT + 
-<a name="l00283"></a>00283           <span class="stringliteral">&quot; + 1 where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>,
-<a name="l00284"></a>00284           <span class="keyword">new</span> String[]{number});
-<a name="l00285"></a>00285     db.close();
-<a name="l00286"></a>00286   }
-<a name="l00287"></a>00287   
-<a name="l00300"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a609bef5ef4b740a5473bc45e6f2de8a7">00300</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> updatePerson(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person, <span class="keywordtype">boolean</span> chname, <span class="keywordtype">boolean</span> chauth, <span class="keywordtype">boolean</span> chsmscount)
-<a name="l00301"></a>00301   {
-<a name="l00302"></a>00302     <span class="comment">/* This method can&#39;t update the number...</span>
-<a name="l00303"></a>00303 <span class="comment">     * chname = true      means update name</span>
-<a name="l00304"></a>00304 <span class="comment">     * chauth = true      means update authorised state</span>
-<a name="l00305"></a>00305 <span class="comment">     * chsmscount = true  means update sms-count</span>
-<a name="l00306"></a>00306 <span class="comment">     * */</span>
-<a name="l00307"></a>00307     
-<a name="l00308"></a>00308     <span class="keywordflow">if</span> (chname || chauth || chsmscount)
-<a name="l00309"></a>00309     {
-<a name="l00310"></a>00310       ContentValues content = <span class="keyword">new</span> ContentValues();
-<a name="l00311"></a>00311       
-<a name="l00312"></a>00312       <span class="keywordflow">if</span> (chname)
-<a name="l00313"></a>00313         content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME, person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557" title="The name of the person.">name</a>);
-<a name="l00314"></a>00314       
-<a name="l00315"></a>00315       <span class="keywordflow">if</span> (chauth)
-<a name="l00316"></a>00316         content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED, getAuthorisedDBValue(person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444" title="Flag whether this person is authorised to trigger sms-response (locating).">authorised</a>));
-<a name="l00317"></a>00317       
-<a name="l00318"></a>00318       <span class="keywordflow">if</span> (chsmscount)
-<a name="l00319"></a>00319         content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT, person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc" title="Counter of how many sms have been caused by this person (on this device).">smscount</a>);
-<a name="l00320"></a>00320       
-<a name="l00321"></a>00321       SQLiteDatabase db = this.getWritableDatabase();
-<a name="l00322"></a>00322       <span class="keywordtype">int</span> ret = db.update(TABLE_PERSONS, content, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>,
-<a name="l00323"></a>00323                           <span class="keyword">new</span> String[]{person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a>});
-<a name="l00324"></a>00324       
-<a name="l00325"></a>00325       <span class="keywordflow">if</span> (ret != 1)
-<a name="l00326"></a>00326       {
-<a name="l00327"></a>00327         Log.d(TAG, String.format(<span class="stringliteral">&quot;updatePerson: number=%s; rows-affected=%d&quot;</span>,
-<a name="l00328"></a>00328                                  person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a>, ret));
-<a name="l00329"></a>00329       }
-<a name="l00330"></a>00330       
-<a name="l00331"></a>00331       db.close();
-<a name="l00332"></a>00332     }
-<a name="l00333"></a>00333     <span class="keywordflow">else</span>
-<a name="l00334"></a>00334     {
-<a name="l00335"></a>00335       Log.d(TAG, <span class="stringliteral">&quot;Update Person: nothing to update...&quot;</span>);
-<a name="l00336"></a>00336     }
-<a name="l00337"></a>00337   }
-<a name="l00338"></a>00338   
-<a name="l00349"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a504b4c8ac3fc7294afc89c6ba2f16461">00349</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keywordtype">boolean</span> isCurrentAuthorised(Cursor cursor)
-<a name="l00350"></a>00350   {
-<a name="l00351"></a>00351     <span class="keywordtype">int</span> auth = cursor.getInt(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED));
-<a name="l00352"></a>00352     <span class="keywordflow">if</span> (auth != 0)
-<a name="l00353"></a>00353     {
-<a name="l00354"></a>00354       <span class="keywordflow">return</span> <span class="keyword">true</span>;
-<a name="l00355"></a>00355     }
-<a name="l00356"></a>00356     <span class="keywordflow">else</span>
-<a name="l00357"></a>00357     {
-<a name="l00358"></a>00358       <span class="keywordflow">return</span> <span class="keyword">false</span>;
-<a name="l00359"></a>00359     }
-<a name="l00360"></a>00360   }
-<a name="l00361"></a>00361   
-<a name="l00370"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#aadb65d33ad45156e6e0677519901efcb">00370</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keywordtype">int</span> getAuthorisedDBValue(<span class="keywordtype">boolean</span> authorised)
-<a name="l00371"></a>00371   {
-<a name="l00372"></a>00372     <span class="keywordflow">if</span> (authorised)
-<a name="l00373"></a>00373       <span class="keywordflow">return</span> 1;
+<a name="l00239"></a>00239     cursor.close();
+<a name="l00240"></a>00240     db.close();
+<a name="l00241"></a>00241     <span class="keywordflow">return</span> person;
+<a name="l00242"></a>00242   }
+<a name="l00243"></a>00243   
+<a name="l00250"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a65685154282aef223f4f7bf4b3177993">00250</a>   <span class="keyword">public</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> getPersonFromNumber(String number)
+<a name="l00251"></a>00251   {
+<a name="l00252"></a>00252     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person = null;
+<a name="l00253"></a>00253     SQLiteDatabase db = this.getReadableDatabase();
+<a name="l00254"></a>00254     Cursor cursor = db.rawQuery(<span class="stringliteral">&quot;select * from &quot;</span> + TABLE_PERSONS +
+<a name="l00255"></a>00255         <span class="stringliteral">&quot; where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>, <span class="keyword">new</span> String[]{number});
+<a name="l00256"></a>00256     
+<a name="l00257"></a>00257     <span class="keywordflow">if</span> (cursor.moveToFirst())
+<a name="l00258"></a>00258     {
+<a name="l00259"></a>00259       person = toPerson(cursor);
+<a name="l00260"></a>00260     }
+<a name="l00261"></a>00261     
+<a name="l00262"></a>00262     cursor.close();
+<a name="l00263"></a>00263     db.close();
+<a name="l00264"></a>00264     <span class="keywordflow">return</span> person;
+<a name="l00265"></a>00265   }
+<a name="l00266"></a>00266   
+<a name="l00274"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a8602adb08d08982a5fd8ab1bff133409">00274</a>   <span class="keyword">public</span> <span class="keywordtype">boolean</span> isAuthorisedNumber(String number)
+<a name="l00275"></a>00275   {
+<a name="l00276"></a>00276     <span class="keywordtype">boolean</span> ret = <span class="keyword">false</span>;
+<a name="l00277"></a>00277     SQLiteDatabase db = this.getReadableDatabase();
+<a name="l00278"></a>00278     Cursor cursor = db.rawQuery(<span class="stringliteral">&quot;select * from &quot;</span> + TABLE_PERSONS +
+<a name="l00279"></a>00279         <span class="stringliteral">&quot; where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>, <span class="keyword">new</span> String[]{number});
+<a name="l00280"></a>00280     
+<a name="l00281"></a>00281     <span class="keywordflow">if</span> (cursor.moveToFirst())
+<a name="l00282"></a>00282     {
+<a name="l00283"></a>00283       ret = isCurrentAuthorised(cursor);
+<a name="l00284"></a>00284     }
+<a name="l00285"></a>00285     
+<a name="l00286"></a>00286     cursor.close();
+<a name="l00287"></a>00287     db.close();
+<a name="l00288"></a>00288     <span class="keywordflow">return</span> ret;
+<a name="l00289"></a>00289   }
+<a name="l00290"></a>00290   
+<a name="l00296"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a7f5d0445b0b6dc9f4d709b46482c6eb5">00296</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> increaseSMSCount(String number)
+<a name="l00297"></a>00297   {
+<a name="l00298"></a>00298     SQLiteDatabase db = this.getWritableDatabase();
+<a name="l00299"></a>00299     db.execSQL(<span class="stringliteral">&quot;update &quot;</span> + TABLE_PERSONS + 
+<a name="l00300"></a>00300           <span class="stringliteral">&quot; set &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT + <span class="stringliteral">&quot; = &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT + 
+<a name="l00301"></a>00301           <span class="stringliteral">&quot; + 1 where &quot;</span> + <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>,
+<a name="l00302"></a>00302           <span class="keyword">new</span> String[]{number});
+<a name="l00303"></a>00303     db.close();
+<a name="l00304"></a>00304   }
+<a name="l00305"></a>00305   
+<a name="l00318"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a609bef5ef4b740a5473bc45e6f2de8a7">00318</a>   <span class="keyword">public</span> <span class="keywordtype">void</span> updatePerson(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person, <span class="keywordtype">boolean</span> chname, <span class="keywordtype">boolean</span> chauth, <span class="keywordtype">boolean</span> chsmscount)
+<a name="l00319"></a>00319   {
+<a name="l00320"></a>00320     <span class="comment">/* This method can&#39;t update the number...</span>
+<a name="l00321"></a>00321 <span class="comment">     * chname = true      means update name</span>
+<a name="l00322"></a>00322 <span class="comment">     * chauth = true      means update authorised state</span>
+<a name="l00323"></a>00323 <span class="comment">     * chsmscount = true  means update sms-count</span>
+<a name="l00324"></a>00324 <span class="comment">     * */</span>
+<a name="l00325"></a>00325     
+<a name="l00326"></a>00326     <span class="keywordflow">if</span> (chname || chauth || chsmscount)
+<a name="l00327"></a>00327     {
+<a name="l00328"></a>00328       ContentValues content = <span class="keyword">new</span> ContentValues();
+<a name="l00329"></a>00329       
+<a name="l00330"></a>00330       <span class="keywordflow">if</span> (chname)
+<a name="l00331"></a>00331         content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME, person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557" title="The name of the person.">name</a>);
+<a name="l00332"></a>00332       
+<a name="l00333"></a>00333       <span class="keywordflow">if</span> (chauth)
+<a name="l00334"></a>00334         content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED, getAuthorisedDBValue(person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444" title="Flag whether this person is authorised to trigger sms-response (locating).">authorised</a>));
+<a name="l00335"></a>00335       
+<a name="l00336"></a>00336       <span class="keywordflow">if</span> (chsmscount)
+<a name="l00337"></a>00337         content.put(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT, person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc" title="Counter of how many sms have been caused by this person (on this device).">smscount</a>);
+<a name="l00338"></a>00338       
+<a name="l00339"></a>00339       SQLiteDatabase db = this.getWritableDatabase();
+<a name="l00340"></a>00340       <span class="keywordtype">int</span> ret = db.update(TABLE_PERSONS, content, <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER + <span class="stringliteral">&quot; = ?&quot;</span>,
+<a name="l00341"></a>00341                           <span class="keyword">new</span> String[]{person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a>});
+<a name="l00342"></a>00342       
+<a name="l00343"></a>00343       <span class="keywordflow">if</span> (ret != 1)
+<a name="l00344"></a>00344       {
+<a name="l00345"></a>00345         Log.d(TAG, String.format(<span class="stringliteral">&quot;updatePerson: number=%s; rows-affected=%d&quot;</span>,
+<a name="l00346"></a>00346                                  person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a>, ret));
+<a name="l00347"></a>00347       }
+<a name="l00348"></a>00348       
+<a name="l00349"></a>00349       db.close();
+<a name="l00350"></a>00350     }
+<a name="l00351"></a>00351     <span class="keywordflow">else</span>
+<a name="l00352"></a>00352     {
+<a name="l00353"></a>00353       Log.d(TAG, <span class="stringliteral">&quot;Update Person: nothing to update...&quot;</span>);
+<a name="l00354"></a>00354     }
+<a name="l00355"></a>00355   }
+<a name="l00356"></a>00356   
+<a name="l00367"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#a504b4c8ac3fc7294afc89c6ba2f16461">00367</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keywordtype">boolean</span> isCurrentAuthorised(Cursor cursor)
+<a name="l00368"></a>00368   {
+<a name="l00369"></a>00369     <span class="keywordtype">int</span> auth = cursor.getInt(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.AUTHORISED));
+<a name="l00370"></a>00370     <span class="keywordflow">if</span> (auth != 0)
+<a name="l00371"></a>00371     {
+<a name="l00372"></a>00372       <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00373"></a>00373     }
 <a name="l00374"></a>00374     <span class="keywordflow">else</span>
-<a name="l00375"></a>00375       <span class="keywordflow">return</span> 0;
-<a name="l00376"></a>00376   }
-<a name="l00377"></a>00377   
-<a name="l00385"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ae20dee7c2a9ae8fce01cf76b9701777f">00385</a>   <span class="keyword">public</span> <span class="keyword">static</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> toPerson(Cursor cursor)
-<a name="l00386"></a>00386   {
-<a name="l00387"></a>00387     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person = <span class="keyword">new</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>();
-<a name="l00388"></a>00388     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557" title="The name of the person.">name</a> = cursor.getString(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME));
-<a name="l00389"></a>00389     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a> = cursor.getString(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER));
-<a name="l00390"></a>00390     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444" title="Flag whether this person is authorised to trigger sms-response (locating).">authorised</a> = isCurrentAuthorised(cursor);
-<a name="l00391"></a>00391     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc" title="Counter of how many sms have been caused by this person (on this device).">smscount</a> = cursor.getInt(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT));
-<a name="l00392"></a>00392     <span class="keywordflow">return</span> person;
-<a name="l00393"></a>00393   }
-<a name="l00394"></a>00394   
-<a name="l00395"></a>00395 }
+<a name="l00375"></a>00375     {
+<a name="l00376"></a>00376       <span class="keywordflow">return</span> <span class="keyword">false</span>;
+<a name="l00377"></a>00377     }
+<a name="l00378"></a>00378   }
+<a name="l00379"></a>00379   
+<a name="l00388"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#aadb65d33ad45156e6e0677519901efcb">00388</a>   <span class="keyword">protected</span> <span class="keyword">static</span> <span class="keywordtype">int</span> getAuthorisedDBValue(<span class="keywordtype">boolean</span> authorised)
+<a name="l00389"></a>00389   {
+<a name="l00390"></a>00390     <span class="keywordflow">if</span> (authorised)
+<a name="l00391"></a>00391       <span class="keywordflow">return</span> 1;
+<a name="l00392"></a>00392     <span class="keywordflow">else</span>
+<a name="l00393"></a>00393       <span class="keywordflow">return</span> 0;
+<a name="l00394"></a>00394   }
+<a name="l00395"></a>00395   
+<a name="l00403"></a><a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase.html#ae20dee7c2a9ae8fce01cf76b9701777f">00403</a>   <span class="keyword">public</span> <span class="keyword">static</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> toPerson(Cursor cursor)
+<a name="l00404"></a>00404   {
+<a name="l00405"></a>00405     <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a> person = <span class="keyword">new</span> <a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>();
+<a name="l00406"></a>00406     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a9a2326f35466e54c36c070829245c557" title="The name of the person.">name</a> = cursor.getString(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NAME));
+<a name="l00407"></a>00407     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a59be7928addfd6c2307fa665d9d0eb3a" title="The telephone number of the person.">number</a> = cursor.getString(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.NUMBER));
+<a name="l00408"></a>00408     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a49709b3405fe939983763b04529ff444" title="Flag whether this person is authorised to trigger sms-response (locating).">authorised</a> = isCurrentAuthorised(cursor);
+<a name="l00409"></a>00409     person.<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html#a29e77766489ae820120b52b0b307f4cc" title="Counter of how many sms have been caused by this person (on this device).">smscount</a> = cursor.getInt(cursor.getColumnIndex(<a class="code" href="classorg_1_1booncode_1_1android_1_1loco_1_1StalkerDatabase_1_1Person.html" title="This class only holds all information of one person in this database.">Person</a>.SMS_COUNT));
+<a name="l00410"></a>00410     <span class="keywordflow">return</span> person;
+<a name="l00411"></a>00411   }
+<a name="l00412"></a>00412   
+<a name="l00413"></a>00413 }
 </pre></div></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -313,7 +331,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address style="text-align: right;"><small>Generated on Sat Sep 1 00:51:47 2012 for loco by&nbsp;
+<hr class="footer"/><address style="text-align: right;"><small>Generated on Tue Oct 23 20:10:38 2012 for loco by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.3 </small></address>
 </body>
