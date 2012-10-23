@@ -1,3 +1,21 @@
+/* *******************************************************************************
+ * LOCO - Localizes the position of you mobile.
+ * Copyright (C) 2012  Manuel Huber
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * *******************************************************************************/
 package org.booncode.android.loco;
 
 import android.app.Activity;
@@ -23,23 +41,48 @@ import android.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.Toast;
 
+
+/*! \brief Activity that is used to show cell information
+ * 
+ *  Added buttons to retrieve the position (if possible) and 
+ *  open maps.
+ * */
 public class GsmCellActivity extends Activity
 {
+  //! Intent extra key for gsm data (String[]).
   public static final String EXTRA_KEY_GSM_DATA = "gsm";
+  //! Intent extra key for the telephone number of the tracked person.
   public static final String EXTRA_SHOW_NUMBER = "number";
+  //! Intent extra key for the name of the tracked person.
   public static final String EXTRA_SHOW_NAME = "name";
   
+  //! TAG to identify log messages from this class.
   protected static final String TAG = "loco.GsmCellActivity";
   
+  //! Shows raw gsm data that has been received.
   protected TextView m_txt_data;
+  //! Shows the response message of maps.
   protected TextView m_txt_browser;
+  //! Reference to button to open maps.
   protected Button   m_btn_maps;
+  //! Reference to button to query server.
   protected Button   m_btn_findpos;
-  
+  //! Current cell-ID
   protected int m_cellid = 0;
+  //! Current lac.
   protected int m_lac = 0;
+  //! Last location result.
   protected Utils.LocationResult m_result = new Utils.LocationResult();
   
+  
+  /*! \brief Callback method (Activity), called if a instance
+   *         of this activity has been created.
+   * 
+   *  Sets up references to controls.
+   * 
+   *  \param savedInstanceState bundle to save extra state info.
+   *         No extra fields have been added to this Bundle.
+   * */
   @Override
   public void onCreate(Bundle savedInstanceState)
   {
@@ -55,10 +98,15 @@ public class GsmCellActivity extends Activity
     m_btn_findpos.setEnabled(false);
   }
   
-  private boolean readData()
+  /*! \brief Helper method to read raw gsm data.
+   * 
+   *  Shows raw gsm data in #m_txt_data (if raw data could be read).
+   *  
+   *  \param intent The intent to read data from.
+   *  \return \c true if raw data could be read, else \c false.
+   * */
+  private boolean readData(Intent intent)
   {
-    Intent intent = getIntent();
-    
     if (intent == null)
     {
       Log.e(TAG, "readData: got null intent...");
@@ -105,12 +153,17 @@ public class GsmCellActivity extends Activity
     return true;
   }
   
-  @Override
-  public void onStart()
+  /*! Helper method that loads cell-information from intent.
+   * 
+   *  Trys to load cell information from intent and
+   *  shows an error message if no valid data has been found in
+   *  \c Intent object.
+   * 
+   *  \param intent The intent to load data from.
+   * */
+  protected void loadCellData(Intent intent)
   {
-    super.onStart();
-    
-    boolean success = readData();
+    boolean success = readData(intent);
     m_btn_findpos.setEnabled(success);
     
     if (!success)
@@ -119,6 +172,56 @@ public class GsmCellActivity extends Activity
     }
   }
   
+  /*! \brief Callback method (Activity), called if activity has been
+   *         started.
+   * 
+   *  Loads cell information and sets view accordingly.
+   * */
+  @Override
+  public void onStart()
+  {
+    Log.d(TAG, "onStart");
+    super.onStart();
+    loadCellData(getIntent());
+  }
+  
+  /*! \brief Callback method (Activity), called if activity resumes.
+   * 
+   *  Loads cell information and sets view accordingly.
+   * */
+  @Override
+  public void onResume()
+  {
+    Log.d(TAG, "onResume");
+    super.onResume();
+    loadCellData(getIntent());
+  }
+  
+  /*! \brief Callback method (Activity), called if there is an instance
+   *         of this activity, but it has been started with a new
+   *         \c Intent.
+   * 
+   *  Loads cell information and sets view accordingly.
+   * 
+   *  \param intent New intent that has to be used by the activity.
+   * */
+  @Override
+  public void onNewIntent(Intent intent)
+  {
+    Log.d(TAG, "onNewIntent");
+    setIntent(intent);
+    super.onNewIntent(intent);
+  }
+  
+  /*! \brief Callback method, called if #m_btn_findpos has been pressed.
+   * 
+   *  Tries to find the position of the gsm cell by asking a server.
+   *  
+   *  \param v The View that has been pressed.
+   * 
+   *  \see Utils.locateGsmCell for details on retrieving the location
+   *       of the gsm-cell.
+   * */
   public void onFindPositionClicked(View v)
   {
     m_result = Utils.locateGsmCell(m_cellid, m_lac);
@@ -133,6 +236,12 @@ public class GsmCellActivity extends Activity
     }
   }
   
+  /*! \brief Callback method, called if #m_btn_maps has been pressed.
+   * 
+   *  Tries to open maps and show the position of the gsm-cell.
+   * 
+   *  \param v The View that has been pressed.
+   * */
   public void onShowMaps(View v)
   {
     if (m_result.success)
@@ -141,18 +250,6 @@ public class GsmCellActivity extends Activity
       Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
       startActivity(intent);
     }
-  }
-  
-  @Override
-  public void onStop()
-  {
-    super.onStop();
-  }
-  
-  @Override
-  public void onDestroy()
-  {
-    super.onDestroy();
   }
   
 }
