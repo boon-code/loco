@@ -20,7 +20,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
   package="org.booncode.android.loco"
   android:versionCode="2"
-  android:versionName="0.2rc-2">
+  android:versionName="0.2.1">
   
   <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
   

@@ -746,7 +746,7 @@ public class Stalker extends Service implements LocationListener
    * */
   private void addGsmCellNotify(StalkerDatabase.Person person, String[] info)
   {
-    final int icon = R.drawable.prog_icon;
+    final int icon = R.drawable.hut_stalker_icon;
     int notify_id = increaseNotifyID();
     Intent intent = new Intent(this, GsmCellActivity.class);
     intent.setFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -780,7 +780,7 @@ public class Stalker extends Service implements LocationListener
    * */
   private void addCdmaCellNotify(StalkerDatabase.Person person, String[] info)
   {
-    final int icon = R.drawable.prog_icon;
+    final int icon = R.drawable.hut_stalker_icon;
     int notify_id = increaseNotifyID();
     Intent intent = new Intent(this, CdmaCellActivity.class);
     intent.setFlags(Intent.FLAG_FROM_BACKGROUND | Intent.FLAG_ACTIVITY_SINGLE_TOP);
